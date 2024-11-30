@@ -1,0 +1,29 @@
+.sec-carousel {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(82% - 100px);
+}
+
+.carousel {
+  width: 100%;
+  background-color: rgb(8, 8, 8);
+  padding: 50px 0px;
+}
+
+.carousel-inner {
+  display: flex;
+}
+
+.d-block {
+  width: 20%;
+}
+
+img {
+  height: 50vh;
+  object-fit: contain;
+  padding: 0 100px;
+  image-rendering: optimizeSpeed;
+}
