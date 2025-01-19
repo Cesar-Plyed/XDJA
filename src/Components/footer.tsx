@@ -49,7 +49,7 @@ function footer() {
       </section>
       <section className="sec-credit">
         <div className="div-text" style={{ padding: "" }}>
-          <span className="spa-text">This page was animated with</span>
+          <span className="spa-text">This page was animated witH</span>
           <Link className="link-Motion link" to={"https://motion.dev/"}>
             <span className="spa-text-link">Motion</span>
           </Link>
