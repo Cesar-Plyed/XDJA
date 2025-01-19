@@ -1,11 +1,13 @@
+.div-container {
+  display: grid;
+  position: relative;
+  grid-template-rows: 75px 1fr 60px;
+  height: 100vh;
+  gap: 0px 0px;
+}
+
 @media (width >= 1024px) {
   .div-container {
-    display: grid;
-    position: relative;
-    grid-template-rows: 75px 1fr 60px;
-    height: 100vh;
-    gap: 0px 0px;
-
     nav {
       grid-row: 1/2;
       height: 100%;
@@ -18,5 +20,37 @@
       grid-row: 3/4;
       height: 100%;
     }
+  }
+}
+
+@media (width <= 1023px) and (width >= 426px) {
+  .div-container {
+    nav {
+      grid-row: 1/2;
+      height: 100%;
+    }
+    main {
+      grid-row: 2/3;
+      height: 100%;
+    }
+    footer {
+      grid-row: 3/4;
+      height: 100%;
+    }
+  }
+}
+
+@media (width <= 425px) {
+  nav {
+    grid-row: 1/2;
+    height: 100%;
+  }
+  main {
+    grid-row: 2/3;
+    height: 100%;
+  }
+  footer {
+    grid-row: 3/4;
+    height: 100%;
   }
 }
