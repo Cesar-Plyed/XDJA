@@ -1,4 +1,4 @@
-import icon from "./icon.png";
+import icon from "../Icon/Icon.svg";
 import img1 from "./img1.jpg";
 import img4 from "./img4.jpg";
 import img5 from "./img5.jpg";
