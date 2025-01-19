@@ -1,5 +1,4 @@
-import { Component } from "react";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { iconLd } from "../assets/Images/ImagesLoader";
 import "../Styles/footer.scss";
@@ -25,7 +24,10 @@ function getWidt() {
 
 function footer() {
   return (
-    <footer className="footer" style={{"--width":`${getWidt}`} as React.CSSProperties}>
+    <footer
+      className="footer"
+      style={{ "--width": `${getWidt}` } as React.CSSProperties}
+    >
       <section className="sec-socMed">
         <Link
           className="link-Facebook link"
