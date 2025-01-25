@@ -1,15 +1,8 @@
-import icon from "../Icon/Icon.svg";
 import img1 from "./img1.jpg";
 import img4 from "./img4.jpg";
 import img5 from "./img5.jpg";
 import img6 from "./img11.jpg";
 import img7 from "./img10.jpg";
-
-export const iconLd = {
-  "id": 1,
-  "src": icon,
-  "alt": "Roofing",
-};
 
 export const imgLd = [
   {
