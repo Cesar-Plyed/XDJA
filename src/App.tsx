@@ -10,7 +10,7 @@ import ImageScrollPh from "./componentsMovil/imageScrollPh.tsx";
 import "./Styles/home.scss";
 import { useEffect, useState } from "react";
 
-function getWidt() {
+export function getWidt() {
   const [width, setWidth] = useState<number>(window.innerWidth);
 
   useEffect(() => {
@@ -30,7 +30,14 @@ function getWidt() {
 
 function Home() {
   return (
-    <div className="div-container">
+    <div
+      className={`bg-background text-foreground p-8 dark:bg-primary-foreground dark:text-primary div-container h-dvh grid  
+        ${
+          getWidt() <= 768
+            ? "grid-rows-[60px_1fr_200px]"
+            : "grid-rows-[80px_1fr_60px]"
+        }`}
+    >
       <nav>{getWidt() <= 768 ? <NavBarPh /> : <Navbar />}</nav>
       <main>
         <section>
