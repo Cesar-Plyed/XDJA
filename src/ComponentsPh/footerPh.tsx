@@ -25,7 +25,7 @@ export class footerPh extends Component {
                 Facebook
               </a>
               <a
-                href="https://wa.me/(574)3046758"
+                href="https://wa.me/+15743046758"
                 className="text-black hover:text-white hover:bg-green-800 rounded-[5px] transition-all p-2"
                 aria-label="Twitter"
               >
