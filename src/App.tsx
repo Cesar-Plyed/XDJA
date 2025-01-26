@@ -1,3 +1,6 @@
+//vercel analytics
+import { Analytics } from "@vercel/analytics/react";
+//desktop
 import Navbar from "./ComponentsWn/navBar.tsx";
 import Carrousel from "./ComponentsWn/imageScroll.tsx";
 import Footer from "./ComponentsWn/footer.tsx";
@@ -7,6 +10,7 @@ import NavBarPh from "./ComponentsPh/navBarPh.tsx";
 import FooterPh from "./ComponentsPh/footerPh.tsx";
 import InformationPh from "./ComponentsPh/informationPh.tsx";
 import ImageScrollPh from "./ComponentsPh/imageScrollPh.tsx";
+//styles
 import "./Styles/home.scss";
 import { useEffect, useState } from "react";
 
@@ -46,6 +50,7 @@ function Home() {
         </section>
       </main>
       <footer>{getWidt() <= 768 ? <FooterPh /> : <Footer />}</footer>
+      <Analytics />
     </div>
   );
 }

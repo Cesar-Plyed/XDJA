@@ -9,7 +9,9 @@ export class footer extends Component {
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <p className="text-sm text-muted leading-relaxed">(574)304-6758</p>
             <p className="text-sm text-muted leading-relaxed">
-              xdjaconstructionllc@gmail.com
+              <a href="mailto:xdjaconstructionllc@gmail.com">
+                xdjaconstructionllc@gmail.com
+              </a>
             </p>
           </div>
           <div className="text-center">
