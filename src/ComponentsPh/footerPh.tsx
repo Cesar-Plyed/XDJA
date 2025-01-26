@@ -11,7 +11,9 @@ export class footerPh extends Component {
               (574)304-6758
             </p>
             <p className="text-sm text-nowrap leading-relaxed inline-block overflow-clip w-full">
-              xdjaconstructionllc@gmail.com
+              <a href="mailto:xdjaconstructionllc@gmail.com">
+                xdjaconstructionllc@gmail.com
+              </a>
             </p>
           </div>
           <div>
