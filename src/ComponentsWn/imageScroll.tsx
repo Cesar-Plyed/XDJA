@@ -28,13 +28,13 @@ function Image({
   const y = useParallax(scrollYProgress, 300);
 
   return (
-    <section className="img-container">
+    <section className="img-container w-full">
       <div ref={ref}>
         <img src={src} alt={alt} className={className} />
       </div>
       <motion.h2
-        className={`backdrop-blur-sm px-1 rounded-lg  text-black`}
-        // Hide until scroll progress is measured
+        className={`backdrop-blur-sm px-1 rounded-lg  text-black;
+`}
         initial={{ visibility: "hidden" }}
         animate={{ visibility: "visible" }}
         style={{ y }}
@@ -45,7 +45,7 @@ function Image({
   );
 }
 
-function imageScrollPh() {
+function imageScroll() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -55,10 +55,9 @@ function imageScrollPh() {
 
   return (
     <section>
-      <h2 className="text-2xl font-semibold mb-4">Services .</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 ">
+      <div className="grid grid-cols-1 width-full overflow-x-hidden">
         <div id="example">
-          <div className="bg-card p-4 rounded-lg shadow content">
+          <div className="bg-card rounded-lg shadow content">
             {imgLd.map((image, index) => (
               <Image
                 key={index}
@@ -70,11 +69,10 @@ function imageScrollPh() {
             ))}
             <motion.div className="progress" style={{ scaleX }} />
           </div>
-          {/* <StyleSheet /> */}
         </div>
       </div>
     </section>
   );
 }
 
-export default imageScrollPh;
+export default imageScroll;

@@ -1,12 +1,12 @@
-import Navbar from "./Components/navBar.tsx";
-import Carrousel from "./Components/imageScroll.tsx";
-import Footer from "./Components/footer.tsx";
-import Information from "./Components/information.tsx";
+import Navbar from "./ComponentsWn/navBar.tsx";
+import Carrousel from "./ComponentsWn/imageScroll.tsx";
+import Footer from "./ComponentsWn/footer.tsx";
+import Information from "./ComponentsWn/information.tsx";
 //phone
-import NavBarPh from "./componentsMovil/navBarPh.tsx";
-import FooterPh from "./componentsMovil/footerPh.tsx";
-import InformationPh from "./componentsMovil/informationPh.tsx";
-import ImageScrollPh from "./componentsMovil/imageScrollPh.tsx";
+import NavBarPh from "./ComponentsPh/navBarPh.tsx";
+import FooterPh from "./ComponentsPh/footerPh.tsx";
+import InformationPh from "./ComponentsPh/informationPh.tsx";
+import ImageScrollPh from "./ComponentsPh/imageScrollPh.tsx";
 import "./Styles/home.scss";
 import { useEffect, useState } from "react";
 
@@ -31,7 +31,7 @@ export function getWidt() {
 function Home() {
   return (
     <div
-      className={`bg-background text-foreground p-8 dark:bg-primary-foreground dark:text-primary div-container h-dvh grid  
+      className={`bg-background text-foreground dark:bg-primary-foreground dark:text-primary div-container h-dvh grid  
         ${
           getWidt() <= 768
             ? "grid-rows-[60px_1fr_200px]"
