@@ -1,10 +1,3 @@
-  I'll analyze your second repository to create documentation for it. Let me explore the XDJA project.  
-   I can see **XDJA** is a website frontend project built with **React + TypeScript + Vite**. Based on the repository structure, I'll create comprehensive documentation for this modern web development stack.
-
----
-
-## 📄 README.md for XDJA
-
 ```markdown
 # 🌐 XDJA
 
