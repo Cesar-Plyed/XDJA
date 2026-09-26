@@ -4,3 +4,8 @@ export { default as Information } from './Information';
 export { default as ImageScroll } from './ImageScroll';
 export { default as Popup } from './Popup';
 export { default as ThemeToggle } from './ThemeToggle';
+export { default as HeroSection } from './HeroSection';
+export { default as AboutSection } from './AboutSection';
+export { default as ServicesSection } from './ServicesSection';
+export { default as ContactSection } from './ContactSection';
+export { default as MobileMenu } from './MobileMenu';

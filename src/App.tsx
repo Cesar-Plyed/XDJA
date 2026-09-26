@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import NavBar from './components/NavBar';
-import Information from './components/Information';
+import HeroSection from './components/HeroSection';
+import AboutSection from './components/AboutSection';
+import ServicesSection from './components/ServicesSection';
 import ImageScroll from './components/ImageScroll';
+import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import { useResponsive } from './hooks/useResponsive';
@@ -27,8 +30,11 @@ function App() {
       </header>
 
       <main className="app-main">
-        <Information />
+        <HeroSection />
+        <AboutSection />
+        <ServicesSection />
         <ImageScroll />
+        <ContactSection />
       </main>
 
       <Footer />
