@@ -1,0 +1,56 @@
+@import './themes.scss';
+
+.information {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+
+  &__content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    margin: 0 0 1.5rem 0;
+    line-height: 1.2;
+    color: var(--color-text);
+
+    &--mobile {
+      font-size: clamp(1.5rem, 8vw, 2.5rem);
+    }
+
+    &--desktop {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+    }
+  }
+
+  &__cta {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: var(--color-bg);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--color-primary);
+
+    &:hover {
+      background-color: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--color-shadow);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .information {
+    padding: 2rem 1rem;
+
+    &__title {
+      margin-bottom: 1rem;
+    }
+  }
+}

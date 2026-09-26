@@ -1,0 +1,60 @@
+@import './themes.scss';
+
+.navbar {
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__logo {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  &__logo-img {
+    object-fit: contain;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: block;
+
+    &--mobile {
+      width: 9vw;
+      height: auto;
+
+      &:hover {
+        background-color: var(--color-accent);
+      }
+    }
+
+    &--desktop {
+      width: 5vw;
+      height: auto;
+
+      &:hover {
+        background-color: var(--color-accent);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+
+    &__header {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
