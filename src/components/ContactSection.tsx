@@ -1,7 +1,9 @@
 import { FC, useState } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import '../styles/contactSection.scss';
 
 const ContactSection: FC = () => {
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,48 +18,50 @@ const ContactSection: FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Construir WhatsApp link
-    const message = `Nombre: ${formData.name}\nEmail: ${formData.email}\nTeléfono: ${formData.phone}\nMensaje: ${formData.message}`;
+    const message = `*New Project Inquiry*\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\nMessage:\n${formData.message}`;
     const waLink = `https://wa.me/+15743046758?text=${encodeURIComponent(message)}`;
     window.open(waLink, '_blank');
+    setFormData({ name: '', email: '', phone: '', message: '' });
   };
 
   return (
     <section id="contact" className="contact">
       <div className="contact__container">
-        <h2 className="contact__title">Ponte en Contacto</h2>
-        <p className="contact__subtitle">Te responderemos en el menor tiempo posible</p>
+        <h2 className="contact__title">{t('contact.title')}</h2>
+        <p className="contact__subtitle">{t('contact.subtitle')}</p>
 
         <div className="contact__content">
           <div className="contact__info">
             <div className="contact__item">
-              <h3 className="contact__item-title">Teléfono</h3>
+              <h3 className="contact__item-title">📞 {t('contact.phone')}</h3>
               <a href="tel:+15743046758" className="contact__link">
                 +1 (574) 304-6758
               </a>
             </div>
             <div className="contact__item">
-              <h3 className="contact__item-title">Email</h3>
+              <h3 className="contact__item-title">✉️ {t('contact.email')}</h3>
               <a href="mailto:xdjaconstructionllc@gmail.com" className="contact__link">
                 xdjaconstructionllc@gmail.com
               </a>
             </div>
             <div className="contact__item">
-              <h3 className="contact__item-title">WhatsApp</h3>
+              <h3 className="contact__item-title">💬 {t('contact.whatsapp')}</h3>
               <a
                 href="https://wa.me/+15743046758"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contact__link"
               >
-                Envía un mensaje
+                {t('contact.whatsapp')}
               </a>
             </div>
           </div>
 
           <form className="contact__form" onSubmit={handleSubmit}>
             <div className="contact__form-group">
-              <label htmlFor="name" className="contact__label">Nombre</label>
+              <label htmlFor="name" className="contact__label">
+                {t('contact.form_name')}
+              </label>
               <input
                 type="text"
                 id="name"
@@ -69,7 +73,9 @@ const ContactSection: FC = () => {
               />
             </div>
             <div className="contact__form-group">
-              <label htmlFor="email" className="contact__label">Email</label>
+              <label htmlFor="email" className="contact__label">
+                {t('contact.form_email')}
+              </label>
               <input
                 type="email"
                 id="email"
@@ -81,7 +87,9 @@ const ContactSection: FC = () => {
               />
             </div>
             <div className="contact__form-group">
-              <label htmlFor="phone" className="contact__label">Teléfono</label>
+              <label htmlFor="phone" className="contact__label">
+                {t('contact.form_phone')}
+              </label>
               <input
                 type="tel"
                 id="phone"
@@ -92,7 +100,9 @@ const ContactSection: FC = () => {
               />
             </div>
             <div className="contact__form-group">
-              <label htmlFor="message" className="contact__label">Mensaje</label>
+              <label htmlFor="message" className="contact__label">
+                {t('contact.form_project')}
+              </label>
               <textarea
                 id="message"
                 name="message"
@@ -104,7 +114,7 @@ const ContactSection: FC = () => {
               />
             </div>
             <button type="submit" className="contact__submit">
-              Enviar por WhatsApp
+              {t('contact.form_submit')}
             </button>
           </form>
         </div>

@@ -1,0 +1,238 @@
+{
+  "es": {
+    "nav": {
+      "home": "Inicio",
+      "about": "Nosotros",
+      "services": "Servicios",
+      "portfolio": "Portafolio",
+      "contact": "Contacto",
+      "privacy": "Privacidad",
+      "cookies": "Cookies",
+      "terms": "Términos"
+    },
+    "hero": {
+      "title": "Construcción y Renovación de Excelencia",
+      "subtitle": "Transformamos espacios con precisión, calidad y responsabilidad. Proyectos que perduran.",
+      "cta_primary": "Solicitar Cotización Gratis",
+      "cta_secondary": "Ver Portafolio"
+    },
+    "about": {
+      "title": "Sobre XDJA Construction",
+      "description": "Con más de 15 años de experiencia, somos líderes en construcción y renovación de espacios. Nos comprometemos con la calidad, transparencia y satisfacción del cliente.",
+      "feature1_title": "Expertos en Concreto",
+      "feature1_text": "Especialistas certificados en trabajos de hormigón y acabados premium.",
+      "feature2_title": "Garantía Integral",
+      "feature2_text": "Todos nuestros proyectos incluyen garantía de 5 años.",
+      "feature3_title": "Presupuesto Transparente",
+      "feature3_text": "Sin costos ocultos ni sorpresas desagradables."
+    },
+    "services": {
+      "title": "Nuestros Servicios",
+      "subtitle": "Soluciones integrales para tus proyectos de construcción",
+      "service1_title": "Hormigón Estampado",
+      "service1_text": "Pisos decorativos y personalizados con diseños exclusivos.",
+      "service2_title": "Reparación Estructural",
+      "service2_text": "Refuerzo y reparación de estructuras dañadas.",
+      "service3_title": "Renovación Integral",
+      "service3_text": "Transformación completa de espacios residenciales y comerciales.",
+      "service4_title": "Acabados Premium",
+      "service4_text": "Detalles de alta calidad que elevan el valor de tu propiedad."
+    },
+    "portfolio": {
+      "title": "Nuestro Portafolio",
+      "subtitle": "Proyectos exitosos que hablan por nosotros",
+      "project1_title": "Centro Comercial Downtown",
+      "project1_desc": "5000 m² de pisos de concreto estampado",
+      "project2_title": "Residencia Familiar Moderna",
+      "project2_desc": "Renovación completa con acabados premium",
+      "project3_title": "Estructura Corporativa",
+      "project3_desc": "Reparación y refuerzo estructural integral",
+      "project4_title": "Plaza Comercial",
+      "project4_desc": "Piso decorativo con diseño personalizado"
+    },
+    "testimonials": {
+      "title": "Lo Que Dicen Nuestros Clientes",
+      "testimonial1_author": "María González",
+      "testimonial1_role": "Propietaria, Residencia Familiar",
+      "testimonial1_text": "Excelente trabajo. El equipo fue profesional, puntual y el resultado superó nuestras expectativas. Muy recomendados.",
+      "testimonial2_author": "Carlos López",
+      "testimonial2_role": "Gerente Comercial, Centro Empresarial",
+      "testimonial2_text": "Trabajamos con XDJA en nuestro proyecto y fue una experiencia perfecta. Cumplieron plazos y presupuesto.",
+      "testimonial3_author": "Ana Martínez",
+      "testimonial3_role": "Diseñadora de Interiores",
+      "testimonial3_text": "Los acabados y detalles que XDJA entrega son de primera calidad. Son mis contratistas de confianza."
+    },
+    "contact": {
+      "title": "Ponte en Contacto",
+      "subtitle": "Nos encantaría escuchar sobre tu proyecto",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "form_name": "Nombre Completo",
+      "form_email": "Correo Electrónico",
+      "form_phone": "Teléfono",
+      "form_project": "Describe Tu Proyecto",
+      "form_submit": "Enviar por WhatsApp",
+      "form_required": "Campo requerido"
+    },
+    "footer": {
+      "copyright": "© 2025 XDJA Construction LLC. Todos los derechos reservados.",
+      "description": "Líderes en construcción y renovación de espacios con excelencia.",
+      "contact_us": "Contáctanos",
+      "follow_us": "Síguenos",
+      "company": "Empresa",
+      "legal": "Legal"
+    },
+    "cookies": {
+      "banner_title": "Uso de Cookies y Privacidad",
+      "banner_text": "Este sitio utiliza cookies funcionales para mejorar tu experiencia. No recolectamos datos personales sin tu consentimiento explícito.",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "learn_more": "Saber Más"
+    },
+    "legal": {
+      "privacy_title": "Política de Privacidad",
+      "privacy_intro": "En XDJA Construction respetamos tu privacidad. Esta política describe cómo manejamos tus datos.",
+      "section1_title": "Información que Recolectamos",
+      "section1_text": "Solo recolectamos información que proporcionas voluntariamente, como nombre, email y teléfono, solo cuando nos contactas.",
+      "section2_title": "Uso de Información",
+      "section2_text": "Usamos tu información únicamente para responder a tus consultas y mejorar nuestros servicios.",
+      "section3_title": "No Compartimos Datos",
+      "section3_text": "Nunca vendemos, alquilamos o compartimos tus datos personales con terceros sin tu consentimiento.",
+      "section4_title": "Seguridad",
+      "section4_text": "Implementamos medidas de seguridad para proteger tu información personal.",
+      "cookies_policy_title": "Política de Cookies",
+      "cookies_intro": "Este sitio no utiliza cookies de seguimiento, publicidad ni analytics de terceros por defecto.",
+      "cookies_section1_title": "Cookies Funcionales",
+      "cookies_section1_text": "Solo utilizamos cookies técnicas para guardar tu preferencia de tema (claro/oscuro) si lo cambias.",
+      "cookies_section2_title": "Consentimiento",
+      "cookies_section2_text": "Todas las cookies requieren tu consentimiento explícito antes de ser guardadas.",
+      "terms_title": "Términos de Servicio",
+      "terms_intro": "Al usar este sitio, aceptas nuestros términos y condiciones.",
+      "terms_section1_title": "Uso Aceptable",
+      "terms_section1_text": "Este sitio es solo para fines informativos. No garantizamos resultados específicos en proyectos de construcción.",
+      "terms_section2_title": "Limitación de Responsabilidad",
+      "terms_section2_text": "XDJA Construction no es responsable por daños indirectos derivados del uso de este sitio.",
+      "terms_section3_title": "Modificaciones",
+      "terms_section3_text": "Nos reservamos el derecho de modificar estos términos en cualquier momento."
+    }
+  },
+  "en": {
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "services": "Services",
+      "portfolio": "Portfolio",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "terms": "Terms"
+    },
+    "hero": {
+      "title": "Excellence in Construction & Renovation",
+      "subtitle": "We transform spaces with precision, quality, and responsibility. Projects that last.",
+      "cta_primary": "Request Free Quote",
+      "cta_secondary": "View Portfolio"
+    },
+    "about": {
+      "title": "About XDJA Construction",
+      "description": "With over 15 years of experience, we are leaders in construction and space renovation. We are committed to quality, transparency, and customer satisfaction.",
+      "feature1_title": "Concrete Experts",
+      "feature1_text": "Certified specialists in concrete work and premium finishes.",
+      "feature2_title": "Comprehensive Warranty",
+      "feature2_text": "All our projects include a 5-year warranty.",
+      "feature3_title": "Transparent Pricing",
+      "feature3_text": "No hidden costs or unpleasant surprises."
+    },
+    "services": {
+      "title": "Our Services",
+      "subtitle": "Comprehensive solutions for your construction projects",
+      "service1_title": "Stamped Concrete",
+      "service1_text": "Decorative and personalized floors with exclusive designs.",
+      "service2_title": "Structural Repair",
+      "service2_text": "Reinforcement and repair of damaged structures.",
+      "service3_title": "Complete Renovation",
+      "service3_text": "Full transformation of residential and commercial spaces.",
+      "service4_title": "Premium Finishes",
+      "service4_text": "High-quality details that increase property value."
+    },
+    "portfolio": {
+      "title": "Our Portfolio",
+      "subtitle": "Successful projects that speak for themselves",
+      "project1_title": "Downtown Shopping Center",
+      "project1_desc": "5000 m² of stamped concrete flooring",
+      "project2_title": "Modern Family Residence",
+      "project2_desc": "Complete renovation with premium finishes",
+      "project3_title": "Corporate Structure",
+      "project3_desc": "Comprehensive structural repair and reinforcement",
+      "project4_title": "Commercial Plaza",
+      "project4_desc": "Decorative flooring with custom design"
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "testimonial1_author": "Maria González",
+      "testimonial1_role": "Owner, Family Residence",
+      "testimonial1_text": "Excellent work. The team was professional, punctual, and the result exceeded our expectations. Highly recommended.",
+      "testimonial2_author": "Carlos López",
+      "testimonial2_role": "Commercial Manager, Business Center",
+      "testimonial2_text": "We worked with XDJA on our project and it was a perfect experience. They met deadlines and budget.",
+      "testimonial3_author": "Ana Martínez",
+      "testimonial3_role": "Interior Designer",
+      "testimonial3_text": "The finishes and details that XDJA delivers are first-class quality. They are my trusted contractors."
+    },
+    "contact": {
+      "title": "Get In Touch",
+      "subtitle": "We'd love to hear about your project",
+      "phone": "Phone",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "form_name": "Full Name",
+      "form_email": "Email Address",
+      "form_phone": "Phone Number",
+      "form_project": "Describe Your Project",
+      "form_submit": "Send via WhatsApp",
+      "form_required": "This field is required"
+    },
+    "footer": {
+      "copyright": "© 2025 XDJA Construction LLC. All rights reserved.",
+      "description": "Leaders in construction and space renovation with excellence.",
+      "contact_us": "Contact Us",
+      "follow_us": "Follow Us",
+      "company": "Company",
+      "legal": "Legal"
+    },
+    "cookies": {
+      "banner_title": "Cookies & Privacy",
+      "banner_text": "This site uses functional cookies to improve your experience. We do not collect personal data without your explicit consent.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "learn_more": "Learn More"
+    },
+    "legal": {
+      "privacy_title": "Privacy Policy",
+      "privacy_intro": "At XDJA Construction, we respect your privacy. This policy describes how we handle your data.",
+      "section1_title": "Information We Collect",
+      "section1_text": "We only collect information that you voluntarily provide, such as name, email, and phone, only when you contact us.",
+      "section2_title": "Use of Information",
+      "section2_text": "We use your information only to respond to your inquiries and improve our services.",
+      "section3_title": "No Data Sharing",
+      "section3_text": "We never sell, rent, or share your personal data with third parties without your consent.",
+      "section4_title": "Security",
+      "section4_text": "We implement security measures to protect your personal information.",
+      "cookies_policy_title": "Cookies Policy",
+      "cookies_intro": "This site does not use tracking cookies, advertising, or third-party analytics by default.",
+      "cookies_section1_title": "Functional Cookies",
+      "cookies_section1_text": "We only use technical cookies to save your theme preference (light/dark) if you change it.",
+      "cookies_section2_title": "Consent",
+      "cookies_section2_text": "All cookies require your explicit consent before being saved.",
+      "terms_title": "Terms of Service",
+      "terms_intro": "By using this site, you accept our terms and conditions.",
+      "terms_section1_title": "Acceptable Use",
+      "terms_section1_text": "This site is for informational purposes only. We do not guarantee specific results on construction projects.",
+      "terms_section2_title": "Limitation of Liability",
+      "terms_section2_text": "XDJA Construction is not responsible for indirect damages arising from the use of this site.",
+      "terms_section3_title": "Modifications",
+      "terms_section3_text": "We reserve the right to modify these terms at any time."
+    }
+  }
+}

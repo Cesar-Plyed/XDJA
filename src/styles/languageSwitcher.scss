@@ -1,0 +1,30 @@
+@import './themes.scss';
+
+.language-switcher {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  &__btn {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    &--active {
+      background-color: var(--color-accent);
+      color: var(--color-bg);
+      border-color: var(--color-accent);
+    }
+  }
+}
