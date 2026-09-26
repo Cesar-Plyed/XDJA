@@ -1,8 +1,9 @@
 import { FC } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
+import '../styles/footer.scss';
 
-interface FooterProps {}
-
-const Footer: FC<FooterProps> = () => {
+const Footer: FC = () => {
+  const { t } = useI18n();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -10,10 +11,10 @@ const Footer: FC<FooterProps> = () => {
       <div className="footer__content">
         <div className="footer__grid">
           <div className="footer__section">
-            <h3 className="footer__title">Contact Us</h3>
+            <h3 className="footer__title">{t('footer.contact_us')}</h3>
             <p className="footer__text">
               <a href="tel:+15743046758" className="footer__link">
-                (574) 304-6758
+                +1 (574) 304-6758
               </a>
             </p>
             <p className="footer__text">
@@ -24,7 +25,7 @@ const Footer: FC<FooterProps> = () => {
           </div>
 
           <div className="footer__section">
-            <h3 className="footer__title">Follow Us</h3>
+            <h3 className="footer__title">{t('footer.follow_us')}</h3>
             <div className="footer__social">
               <a
                 href="https://www.facebook.com/xdjaconstructionllc?mibextid=LQQJ4d"
@@ -46,11 +47,23 @@ const Footer: FC<FooterProps> = () => {
               </a>
             </div>
           </div>
+
+          <div className="footer__section">
+            <h3 className="footer__title">{t('footer.legal')}</h3>
+            <div className="footer__links">
+              <a href="#privacy" className="footer__link">{t('nav.privacy')}</a>
+              <a href="#cookies" className="footer__link">{t('nav.cookies')}</a>
+              <a href="#terms" className="footer__link">{t('nav.terms')}</a>
+            </div>
+          </div>
         </div>
 
         <div className="footer__bottom">
           <p className="footer__copyright">
-            © {currentYear} XDJA Construction. All rights reserved.
+            {t('footer.copyright')}
+          </p>
+          <p className="footer__description">
+            {t('footer.description')}
           </p>
         </div>
       </div>

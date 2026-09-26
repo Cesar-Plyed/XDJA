@@ -1,34 +1,33 @@
 import { FC } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import '../styles/aboutSection.scss';
 
 const AboutSection: FC = () => {
+  const { t } = useI18n();
+
   return (
     <section id="about" className="about">
       <div className="about__container">
         <div className="about__content">
-          <h2 className="about__title">Sobre XDJA Construction</h2>
-          <p className="about__text">
-            Somos una empresa especializada en la construcción y renovación de espacios con enfoque en la calidad,
-            seguridad y transparencia. Con años de experiencia en el mercado, nos comprometemos a entregar proyectos
-            excepcionales que superan las expectativas de nuestros clientes.
-          </p>
+          <h2 className="about__title">{t('about.title')}</h2>
+          <p className="about__text">{t('about.description')}</p>
         </div>
 
         <div className="about__features">
           <div className="about__feature">
             <div className="about__feature-icon">✓</div>
-            <h3 className="about__feature-title">Diseño Limpio</h3>
-            <p className="about__feature-text">Experiencia moderna y enfocada en resultados.</p>
+            <h3 className="about__feature-title">{t('about.feature1_title')}</h3>
+            <p className="about__feature-text">{t('about.feature1_text')}</p>
           </div>
           <div className="about__feature">
             <div className="about__feature-icon">✓</div>
-            <h3 className="about__feature-title">Expertos en Hormigón</h3>
-            <p className="about__feature-text">Especialistas en trabajos de concreto de alta calidad.</p>
+            <h3 className="about__feature-title">{t('about.feature2_title')}</h3>
+            <p className="about__feature-text">{t('about.feature2_text')}</p>
           </div>
           <div className="about__feature">
             <div className="about__feature-icon">✓</div>
-            <h3 className="about__feature-title">Garantía Garantizada</h3>
-            <p className="about__feature-text">Todos nuestros trabajos incluyen garantía y respaldo.</p>
+            <h3 className="about__feature-title">{t('about.feature3_title')}</h3>
+            <p className="about__feature-text">{t('about.feature3_text')}</p>
           </div>
         </div>
       </div>

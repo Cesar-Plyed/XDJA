@@ -28,7 +28,7 @@ const PortfolioSection: FC = () => {
       id: 4,
       title: t('portfolio.project4_title'),
       description: t('portfolio.project4_desc'),
-      image: '🛍️',
+      image: '🛒',
     },
   ];
 

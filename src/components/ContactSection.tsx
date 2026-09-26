@@ -33,19 +33,19 @@ const ContactSection: FC = () => {
         <div className="contact__content">
           <div className="contact__info">
             <div className="contact__item">
-              <h3 className="contact__item-title">📞 {t('contact.phone')}</h3>
+              <h3 className="contact__item-title">{t('contact.phone')}</h3>
               <a href="tel:+15743046758" className="contact__link">
                 +1 (574) 304-6758
               </a>
             </div>
             <div className="contact__item">
-              <h3 className="contact__item-title">✉️ {t('contact.email')}</h3>
+              <h3 className="contact__item-title">{t('contact.email')}</h3>
               <a href="mailto:xdjaconstructionllc@gmail.com" className="contact__link">
                 xdjaconstructionllc@gmail.com
               </a>
             </div>
             <div className="contact__item">
-              <h3 className="contact__item-title">💬 {t('contact.whatsapp')}</h3>
+              <h3 className="contact__item-title">{t('contact.whatsapp')}</h3>
               <a
                 href="https://wa.me/+15743046758"
                 target="_blank"
