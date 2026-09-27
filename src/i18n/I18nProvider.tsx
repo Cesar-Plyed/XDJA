@@ -29,13 +29,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = translations[locale];
+    let value: unknown = translations[locale];
 
     for (const k of keys) {
-      value = value?.[k];
+      value = (value as Record<string, unknown>)?.[k] ?? key;
     }
 
-    return value || key;
+    return (value as string) || key;
   };
 
   return (

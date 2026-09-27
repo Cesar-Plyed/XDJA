@@ -1,4 +1,4 @@
-@import './themes.scss';
+@use './themes.scss';
 
 .navbar {
   width: 100%;
@@ -81,7 +81,7 @@
   &__desktop-menu {
     display: flex;
     gap: 2rem;
-    align-items: center;
+    align-items: start;
     justify-content: center;
     margin-top: 1rem;
   }
