@@ -1,0 +1,88 @@
+@use './themes.scss';
+
+.testimonials {
+  width: 100%;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg) 100%);
+  color: var(--color-text);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    margin: 0 0 3rem 0;
+    text-align: center;
+    color: var(--color-text);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+}
+
+.testimonial-card {
+  background-color: var(--color-bg);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px var(--color-shadow);
+    border-color: var(--color-accent);
+  }
+
+  &__rating {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  &__star {
+    color: var(--color-accent);
+    font-size: 1.2rem;
+  }
+
+  &__text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  &__author {
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+  }
+
+  &__name {
+    margin: 0;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  &__role {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials {
+    padding: 2rem 1rem;
+
+    &__grid {
+      gap: 1.5rem;
+    }
+  }
+}

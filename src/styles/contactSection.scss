@@ -1,0 +1,144 @@
+@use './themes.scss';
+
+.contact {
+  width: 100%;
+  padding: 4rem 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+    color: var(--color-text);
+  }
+
+  &__subtitle {
+    font-size: 1.1rem;
+    text-align: center;
+    color: var(--color-text-secondary);
+    margin: 0 0 3rem 0;
+    line-height: 1.6;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__item {
+    background-color: var(--color-bg-secondary);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+  }
+
+  &__item-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text);
+  }
+
+  &__link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95rem;
+  }
+
+  &__input,
+  &__textarea {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  &__submit {
+    background-color: var(--color-primary);
+    color: var(--color-bg);
+    border: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: var(--color-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px var(--color-shadow);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .contact {
+    padding: 2rem 1rem;
+
+    &__content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+}

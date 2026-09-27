@@ -1,0 +1,32 @@
+// Light theme (default)
+:root {
+  --color-bg: #ffffff;
+  --color-bg-rgb: 255, 255, 255;
+  --color-bg-secondary: #f5f7f9;
+  --color-text: #101828;
+  --color-text-secondary: #475467;
+  --color-border: rgba(15, 23, 42, 0.12);
+  --color-border-rgb: 15, 23, 42;
+  --color-primary: #0f172a;
+  --color-primary-hover: #1e293b;
+  --color-accent: #d97706;
+  --color-shadow: rgba(15, 23, 42, 0.12);
+  --color-card: #f8fafc;
+}
+
+// Dark theme
+html[data-theme='dark'],
+html.dark {
+  --color-bg: #0b1020;
+  --color-bg-rgb: 11, 16, 32;
+  --color-bg-secondary: #111827;
+  --color-text: #f3f4f6;
+  --color-text-secondary: #cbd5e1;
+  --color-border: rgba(148, 163, 184, 0.2);
+  --color-border-rgb: 148, 163, 184;
+  --color-primary: #f8fafc;
+  --color-primary-hover: #dbeafe;
+  --color-accent: #f59e0b;
+  --color-shadow: rgba(0, 0, 0, 0.28);
+  --color-card: #1f2937;
+}
