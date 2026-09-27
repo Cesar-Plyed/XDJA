@@ -91,12 +91,12 @@
       "learn_more": "Saber Más"
     },
     "imageScroll": {
-      "farming": "Agricultura",
+      "farming": "Armazones de madera",
       "flooring": "Pisos",
       "siding": "Revestimiento",
       "windowsDoors": "Ventanas y puertas",
       "drywall": "Tablaroca",
-      "farmingDesc": "Sistemas de riego y preparación de terreno para cultivos de alto rendimiento.",
+      "farmingDesc": "Construyendo nuevos espacios.",
       "flooringDesc": "Pisos de concreto pulido y estampado para espacios industriales y residenciales.",
       "sidingDesc": "Revestimientos exteriores duraderos que protegen y embellecen su propiedad.",
       "windowsDoorsDesc": "Instalación de ventanas y puertas de alta eficiencia energética.",
@@ -243,12 +243,12 @@
       "learn_more": "Learn More"
     },
     "imageScroll": {
-      "farming": "Farming",
+      "farming": "Framing",
       "flooring": "Flooring",
       "siding": "Siding",
       "windowsDoors": "Windows & doors",
       "drywall": "Drywall",
-      "farmingDesc": "Irrigation systems and land preparation for high-yield crops.",
+      "farmingDesc": "Building new spaces",
       "flooringDesc": "Polished and stamped concrete floors for industrial and residential spaces.",
       "sidingDesc": "Durable exterior cladding that protects and beautifies your property.",
       "windowsDoorsDesc": "Installation of high energy-efficiency windows and doors.",
