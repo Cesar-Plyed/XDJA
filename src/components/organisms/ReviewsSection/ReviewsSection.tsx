@@ -6,6 +6,7 @@ import { Rating } from "@components/molecules/Rating/Rating";
 import { useI18n } from "@i18n/useI18n";
 import { api, Review } from "@lib/api";
 import { FC, useCallback, useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 
 interface ReviewsSectionProps {
@@ -23,7 +24,7 @@ export const ReviewsSection: FC<ReviewsSectionProps> = ({ className = '' }) => {
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.getReviewsByProject('', 1, 10);
+      const response = await api.getReviews({ page: 1, pageSize: 10 });
       setReviews(response.items);
       setError(null);
     } catch (err) {
@@ -108,6 +109,12 @@ export const ReviewsSection: FC<ReviewsSectionProps> = ({ className = '' }) => {
         <Typography variant="p" color="muted" className="reviews__subtitle" gutterBottom>
           {t('reviews.subtitle')}
         </Typography>
+        <div className="reviews__actions">
+          <NavLink to="/reviews" className="reviews__write-link">
+            <Icon name="messageSquare" size={18} />
+            <span>{t('reviews.write_review')}</span>
+          </NavLink>
+        </div>
         <div className="reviews__grid" role="list">
           {reviews.map((review) => (
             <article key={review.id} className="review-card" role="listitem">

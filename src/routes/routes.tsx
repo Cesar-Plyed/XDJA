@@ -8,6 +8,7 @@ import { CookiesPolicyPage } from '@pages/CookiesPolicyPage/CookiesPolicyPage';
 import { HomePage } from '@pages/HomePage/HomePage';
 import { LoginPage } from '@pages/LoginPage/LoginPage';
 import { PrivacyPolicyPage } from '@pages/PrivacyPolicyPage/PrivacyPolicyPage';
+import { ReviewsPage } from '@pages/ReviewsPage/ReviewsPage';
 import { TermsOfServicePage } from '@pages/TermsOfServicePage/TermsOfServicePage';
 
 function AppRoutes() {
@@ -66,6 +67,23 @@ function AppRoutes() {
         {
           path: 'cookies',
           element: <CookiesPolicyPage />,
+        },
+      ],
+    },
+    {
+      path: '/reviews',
+      element: <MainLayout
+        onLegalClick={openLegalModal}
+        legalModal={legalModal}
+        closeLegalModal={closeLegalModal}
+        cookiesConsent={cookiesConsent}
+        handleAcceptCookies={handleAcceptCookies}
+        handleDeclineCookies={handleDeclineCookies}
+      />,
+      children: [
+        {
+          index: true,
+          element: <ReviewsPage />,
         },
       ],
     },
