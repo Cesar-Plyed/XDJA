@@ -1,4 +1,4 @@
-// 1) Tema + base + componentes atómicos (van primero para que las secciones puedan sobrescribir)
+// 1) Theme + base + atomic components (loaded first so sections can override them)
 @use './themes.scss';
 @use './app.scss';
 @use './atoms.scss';
@@ -7,7 +7,7 @@
 @use './header.scss';
 @use './footer.scss';
 
-// 3) Secciones de la home
+// 3) Home sections
 @use './heroSection.scss';
 @use './aboutSection.scss';
 @use './servicesSection.scss';
@@ -19,15 +19,16 @@
 @use './information.scss';
 @use './imagesScroll.scss';
 
-// 4) Componentes sueltos
+// 4) Standalone components
 @use './cookieBanner.scss';
 @use './popup.scss';
 @use './legalPages.scss';
 
-// 5) Páginas nuevas (login / admin / reseñas)
+// 5) New pages (login / admin / reviews)
 @use './loginPage.scss';
 @use './adminPage.scss';
 @use './reviewsPage.scss';
+@use './projectsPage.scss';
 
-// 6) Ajustes de las clases nuevas del refactor (siempre al final)
+// 6) Adjustments for the new refactor classes (always last)
 @use './layoutFixes.scss';

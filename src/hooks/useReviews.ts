@@ -3,8 +3,8 @@ import { api } from '@lib/api';
 import type { Review } from '@lib/api';
 
 /**
- * Lista paginada de reviews con "cargar más", filtro por proyecto y
- * protección contra respuestas desordenadas (si cambias el filtro rápido).
+ * Paginated review list with "load more", project filter and
+ * protection against out-of-order responses (when the filter changes quickly).
  */
 export function useReviews(projectId: string | null, pageSize = 9) {
   const [items, setItems] = useState<Review[]>([]);
@@ -23,7 +23,7 @@ export function useReviews(projectId: string | null, pageSize = 9) {
 
       try {
         const res = await api.getReviews({ page: targetPage, pageSize, projectId });
-        if (id !== requestId.current) return; // llegó una respuesta vieja
+        if (id !== requestId.current) return; // a stale response arrived
         setItems((prev) => {
           if (replace) return res.items;
           const seen = new Set(prev.map((r) => r.id));
@@ -52,7 +52,7 @@ export function useReviews(projectId: string | null, pageSize = 9) {
   const loadMore = useCallback(() => fetchPage(page + 1, false), [fetchPage, page]);
   const refetch = useCallback(() => fetchPage(1, true), [fetchPage]);
 
-  /** Agrega una review recién creada arriba de la lista sin volver a pedirla. */
+  /** Prepends a newly created review to the list without refetching it. */
   const prepend = useCallback((review: Review) => {
     setItems((prev) => (prev.some((r) => r.id === review.id) ? prev : [review, ...prev]));
     setTotal((prev) => prev + 1);

@@ -1,6 +1,6 @@
-// Uso (desde la raíz del frontend):
+// Usage (from the frontend root):
 //   node mergeTranslations.mjs src/i18n/translations.json src/i18n/translations.additions.json
-// Agrega SOLO las claves que faltan. Nunca sobrescribe textos que ya tienes.
+// Adds ONLY the missing keys. It never overwrites texts you already have.
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const [, , targetPath, additionsPath] = process.argv;

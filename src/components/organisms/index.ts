@@ -5,8 +5,6 @@ export type { FooterProps } from "./Footer/Footer";
 export { Header } from "./Header/Header";
 export { Hero } from "./Hero/Hero";
 export type { HeroProps } from "./Hero/Hero";
-export { PortfolioCarousel } from "./PortfolioCarousel/PortfolioCarousel";
-export type { PortfolioCarouselProps } from "./PortfolioCarousel/PortfolioCarousel";
 export { ReviewsSection } from "./ReviewsSection/ReviewsSection";
 export type { ReviewsSectionProps } from "./ReviewsSection/ReviewsSection";
 export { ServicesGrid } from "./ServicesGrid/ServicesGrid";

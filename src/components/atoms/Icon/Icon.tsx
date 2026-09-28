@@ -11,7 +11,7 @@ import {
   X,
   Menu,
   MessageSquare,
-  Share2,
+  Link as LinkIcon,
   Scale,
   Shield,
   Cookie,
@@ -35,7 +35,7 @@ import {
   ArrowRight,
   Home,
   Store,
-   Image,
+  Image,
   Images,
   LayoutDashboard,
   Upload,
@@ -55,7 +55,7 @@ export type IconName =
   | 'x'
   | 'menu'
   | 'messageSquare'
-  | 'share2'
+  | 'link'
   | 'scale'
   | 'shield'
   | 'cookie'
@@ -96,7 +96,7 @@ const iconMap: Record<IconName, LucideIcon> = {
   x: X,
   menu: Menu,
   messageSquare: MessageSquare,
-  share2: Share2,
+  link: LinkIcon,
   scale: Scale,
   shield: Shield,
   cookie: Cookie,

@@ -20,7 +20,7 @@ export const ReviewCard: FC<ReviewCardProps> = ({ review, projectTitle }) => {
 
   const needsTranslation = review.language !== locale;
 
-  // Si el visitante cambia de idioma, la traducción anterior ya no aplica
+  // If the visitor switches language, the previous translation no longer applies
   useEffect(() => {
     setTranslated(null);
     setShowTranslated(false);

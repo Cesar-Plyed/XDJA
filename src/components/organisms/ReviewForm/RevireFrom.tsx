@@ -87,7 +87,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({ projects, onCreated }) => {
         description: description.trim(),
         alias: alias.trim() || null,
         language,
-        // En desarrollo sin site key el backend omite la verificación si no tiene TURNSTILE_SECRET_KEY
+        // In development without a site key the backend skips verification if TURNSTILE_SECRET_KEY is missing
         turnstileToken: token || 'dev-token',
       });
 
@@ -108,7 +108,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({ projects, onCreated }) => {
         setFormError(err instanceof Error && err.message ? err.message : t('reviews.form.generic_error'));
       }
     } finally {
-      // El token de Turnstile es de un solo uso: siempre se reinicia
+      // The Turnstile token is single-use: always reset it
       setToken('');
       setCaptchaResetKey((k) => k + 1);
       setSubmitting(false);
@@ -159,7 +159,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({ projects, onCreated }) => {
         {errors.rating && <p className="input__error" role="alert">{errors.rating}</p>}
       </div>
 
-      {/* Proyecto (opcional) */}
+      {/* Project (optional) */}
       {projects.length > 0 && (
         <div className="review-form__field">
           <Label htmlFor="review-project">{t('reviews.form.project')}</Label>
@@ -177,7 +177,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({ projects, onCreated }) => {
         </div>
       )}
 
-      {/* Texto */}
+      {/* Text */}
       <div className="review-form__field">
         <Label htmlFor="review-description" required>{t('reviews.form.description')}</Label>
         <textarea
@@ -202,7 +202,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({ projects, onCreated }) => {
         </div>
       </div>
 
-      {/* Alias + idioma */}
+      {/* Alias + language */}
       <div className="review-form__row">
         <div className="review-form__field">
           <Label htmlFor="review-alias">{t('reviews.form.alias')}</Label>

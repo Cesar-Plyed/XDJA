@@ -1,69 +1,52 @@
-import { FC, useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
 import { useTheme } from '@hooks/useTheme';
+import type { SectionId } from '@hooks/useSectionNavigation';
 import { useI18n } from '@i18n/useI18n';
 import { Typography } from '@components/atoms/Typography/Typography';
-import { NavItem } from '@components/molecules/NavItem/NavItem';
+import { SectionLink } from '@components/molecules/SectionLink/SectionLink';
 import { Icon } from '@components/atoms/Icon/Icon';
 import { Button } from '@components/atoms/Button/Button';
 import { Logo } from '@components/atoms/Logo/Logo';
 
+const WHATSAPP_URL = 'https://wa.me/+15743046758';
+
+const NAV_SECTIONS = [
+  { id: 'about', labelKey: 'nav.about' },
+  { id: 'services', labelKey: 'nav.services' },
+  { id: 'portfolio', labelKey: 'nav.portfolio' },
+  { id: 'reviews', labelKey: 'nav.reviews' },
+  { id: 'contact', labelKey: 'nav.contact' },
+] as const satisfies ReadonlyArray<{ id: SectionId; labelKey: string }>;
 
 export const Header: FC = () => {
   const { locale, setLocale, t } = useI18n();
   const { theme, toggleTheme } = useTheme();
-  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { to: '#about', label: t('nav.about') },
-    { to: '#services', label: t('nav.services') },
-    { to: '#portfolio', label: t('nav.portfolio') },
-    { to: '/reviews', label: t('nav.reviews') },
-    { to: '#contact', label: t('nav.contact') },
-  ];
-
-  const handleNavClick = (to: string, e: React.MouseEvent) => {
-    if (to.startsWith('#')) {
-      e.preventDefault();
-      const element = document.querySelector(to);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-      setIsMobileMenuOpen(false);
-    } else {
-      setIsMobileMenuOpen(false);
-    }
-  };
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header className={`header ${isScrolled ? 'header--scrolled' : ''}`}>
       <div className="header__container">
-        <NavLink to="/" className="header__logo" aria-label={t('nav.home')}>
+        <SectionLink section="home" className="header__logo" aria-label={t('nav.home')} onNavigate={closeMobileMenu}>
           <Logo size={40} className="header__logo-icon" />
-          <Typography variant="h4" weight="bold" className="header__logo-text">
-            XDJA
-          </Typography>
-        </NavLink>
+          <Typography variant="h4" weight="bold" className="header__logo-text">XDJA</Typography>
+        </SectionLink>
 
-        <nav className="header__nav" role="navigation" aria-label={t('nav.main_navigation')}>
+        <nav className="header__nav" aria-label={t('nav.main_navigation')}>
           <ul className="header__nav-list">
-            {navItems.map((item) => (
-              <li key={item.to} className="header__nav-item">
-                <NavItem
-                  to={item.to}
-                  label={item.label}
-                  onClick={(e: React.MouseEvent) => handleNavClick(item.to, e)}
-                />
+            {NAV_SECTIONS.map(({ id, labelKey }) => (
+              <li key={id} className="header__nav-item">
+                <SectionLink section={id} className="nav-item">
+                  <span className="nav-item__label">{t(labelKey)}</span>
+                </SectionLink>
               </li>
             ))}
           </ul>
@@ -72,6 +55,7 @@ export const Header: FC = () => {
         <div className="header__actions">
           <div className="header__lang-switcher">
             <button
+              type="button"
               className={`header__lang-btn ${locale === 'es' ? 'header__lang-btn--active' : ''}`}
               onClick={() => setLocale('es')}
               aria-pressed={locale === 'es'}
@@ -80,6 +64,7 @@ export const Header: FC = () => {
               ES
             </button>
             <button
+              type="button"
               className={`header__lang-btn ${locale === 'en' ? 'header__lang-btn--active' : ''}`}
               onClick={() => setLocale('en')}
               aria-pressed={locale === 'en'}
@@ -103,15 +88,16 @@ export const Header: FC = () => {
             variant="primary"
             size="sm"
             leftIcon={<Icon name="messageSquare" size={18} />}
-            onClick={() => window.open('https://wa.me/+15743046758', '_blank', 'noopener,noreferrer')}
+            onClick={() => window.open(WHATSAPP_URL, '_blank', 'noopener,noreferrer')}
             className="header__cta"
           >
             {t('nav.whatsapp')}
           </Button>
 
           <button
+            type="button"
             className="header__mobile-toggle"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMobileMenuOpen ? t('nav.close_menu') : t('nav.open_menu')}
@@ -125,32 +111,17 @@ export const Header: FC = () => {
         <div id="mobile-menu" className="header__mobile-menu" role="dialog" aria-label={t('nav.mobile_menu')}>
           <nav className="header__mobile-nav">
             <ul className="header__mobile-nav-list">
-              {navItems.map((item) => (
-                <li key={item.to}>
-                  <button
-                    className="header__mobile-nav-link"
-                    onClick={() => {
-                      if (item.to.startsWith('#')) {
-                        const element = document.querySelector(item.to);
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      } else {
-                        navigate(item.to);
-                      }
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    {item.label}
-                  </button>
+              {NAV_SECTIONS.map(({ id, labelKey }) => (
+                <li key={id}>
+                  <SectionLink section={id} className="header__mobile-nav-link" onNavigate={closeMobileMenu}>
+                    {t(labelKey)}
+                  </SectionLink>
                 </li>
               ))}
-              <li>
-                <div className="header__mobile-divider" />
-              </li>
+              <li><div className="header__mobile-divider" /></li>
               <li>
                 <a
-                  href="https://wa.me/+15743046758"
+                  href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="header__mobile-nav-link header__mobile-nav-link--cta"

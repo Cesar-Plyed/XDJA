@@ -67,6 +67,13 @@
     flex-wrap: wrap;
   }
 
+  &__social-feedback {
+    align-self: center;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    min-height: 1em;
+  }
+
   &__social-link {
     display: inline-flex;
     align-items: center;
@@ -90,6 +97,12 @@
       background-color: #25d366;
       color: white;
       border-color: #25d366;
+    }
+
+    &--copy {
+      cursor: pointer;
+      font: inherit;
+      &:hover { border-color: var(--color-accent); color: var(--color-accent); }
     }
   }
 

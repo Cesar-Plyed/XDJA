@@ -48,7 +48,7 @@ export interface TurnstileProps {
   onExpire?: () => void;
   onError?: () => void;
   theme?: 'light' | 'dark' | 'auto';
-  /** Cambia este número para reiniciar el widget (el token es de un solo uso). */
+  /** Change this number to reset the widget (the token is single-use). */
   resetKey?: number;
   className?: string;
 }
@@ -65,7 +65,7 @@ export const Turnstile: FC<TurnstileProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
-  // Callbacks en refs para no re-renderizar el widget cuando cambian
+  // Callbacks stored in refs so the widget is not re-rendered when they change
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
   const onErrorRef = useRef(onError);

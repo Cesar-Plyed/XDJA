@@ -35,10 +35,12 @@ Follow the code style guidelines below.
 ### 4. Test Your Changes
 
 ```bash
-npm run dev      # Test locally
+npm run dev      # Test locally on http://localhost:3000
 npm run build    # Check production build
 npm run lint     # Verify code quality
 ```
+
+The dev server proxies `/api` to `http://localhost:4000`, so start the backend locally if your change touches data fetching.
 
 ### 5. Commit with Clear Messages
 
@@ -174,27 +176,51 @@ Describe how to test these changes.
 
 ### Components
 
-1. Create new file in `src/components/`
-2. Use TypeScript with proper interfaces
-3. Add corresponding styles in `src/styles/`
-4. Export from `src/components/index.ts`
-5. Add translations for new text to `src/i18n/translations.json`
+Components follow an Atomic Design structure under `src/components/`. Pick the tier that matches the responsibility:
+
+| Tier         | Location                             | Responsibility                             |
+| ------------ | ------------------------------------ | ------------------------------------------ |
+| `atoms`      | `src/components/atoms/<Name>/`       | Presentational building blocks, no data fetching |
+| `molecules`  | `src/components/molecules/<Name>/`   | Composes several atoms                    |
+| `organisms`  | `src/components/organisms/<Name>/`   | A full, self-contained UI section         |
+| `templates`  | `src/components/templates/<Name>/`   | Page-level layout shell                   |
+
+To add one:
+
+1. Create the folder `src/components/<tier>/<Name>/` with `<Name>.tsx` and an `index.ts` barrel
+2. Use TypeScript with proper interfaces and export a named component
+3. Add the corresponding stylesheet in `src/styles/` and register it in `src/styles/index.scss`
+4. Export it from the tier's `index.ts` (`src/components/index.ts` re-exports all tiers)
+5. Add translations for any new text to `src/i18n/translations.json`
+6. Import using the path aliases (`@components/atoms/...`) rather than long relative paths
 
 ### Translations
 
 When adding new text:
 
-1. Add key to both `es` and `en` objects in `translations.json`
+1. Add the key to **both** `es` and `en` objects in `src/i18n/translations.json`
 2. Use dot notation for nested keys: `section.subsection.key`
 3. Keep translations consistent in tone and style
-4. Use the `useI18n()` hook in components
+4. Use the `useI18n()` hook from `@i18n/useI18n` in components
+5. Use `ROUTES` constants from `src/routes/paths.ts` for links instead of hardcoded paths
+
+### Data Fetching
+
+- Put backend calls in `src/lib/api.ts` and expose typed hooks from `src/hooks/`
+- Guard paginated queries against out-of-order responses with a request-id ref, as done in `src/hooks/useReviews.ts`
+- Keep static and database-backed sources merged in a dedicated hook (`src/hooks/usePortfolioItems.ts`) rather than in components
 
 ### Styles
 
-1. Create `src/styles/component-name.scss`
-2. Use CSS variables for colors and sizes
-3. Ensure dark theme support
-4. Test responsive design at breakpoints: 320px, 768px, 1024px
+1. Create `src/styles/componentName.scss` (camelCase, matching the component)
+2. Register the new partial in `src/styles/index.scss` respecting the existing order — themes and atoms first, `layoutFixes.scss` always last
+3. Use CSS variables for colors and sizes so both themes work
+4. Follow BEM naming conventions
+5. Test responsive design at breakpoints: 320px, 768px, 1024px
+
+### Code Comments
+
+Write code comments in English, matching the rest of the codebase. Keep them short and explain *why*, not *what*.
 
 ## Bug Reports
 
@@ -230,11 +256,18 @@ All contributions must meet WCAG 2.1 AA standards:
 
 Only repository maintainers can merge to `main` and deploy.
 
-Changes are automatically deployed to production when merged to `main`.
+Changes are automatically deployed to production when merged to `main`. The app uses `createBrowserRouter`, so the hosting platform must rewrite all paths to `index.html` for client-side routes to work on a hard refresh.
 
 ## Questions?
 
 Contact the development team or open a discussion on GitHub.
+
+## Documentation
+
+- [README.md](./README.md) — architecture, configuration, API integration
+- [DEPLOYMENT.md](./DEPLOYMENT.md) — deployment steps and checklists
+
+Keep documentation in English and update it in the same pull request as the code it describes.
 
 ---
 

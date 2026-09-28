@@ -87,7 +87,7 @@
   }
 }
 
-/* Tarjeta de review (extras sobre reviewsSection.scss) */
+/* Review card (additions on top of reviewsSection.scss) */
 .review-card {
   height: 100%;
 
@@ -107,7 +107,7 @@
   &__error { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--color-error); }
 }
 
-/* Formulario */
+/* Form */
 .review-form {
   display: flex;
   flex-direction: column;
@@ -154,7 +154,7 @@
   .review-form__row { grid-template-columns: 1fr; }
 }
 
-/* Botón "Ver todas las reseñas" en la sección de la home */
+/* "View all reviews" button in the home section */
 .reviews__cta {
   display: flex;
   justify-content: center;

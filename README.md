@@ -2,7 +2,7 @@
 
 ## Overview
 
-XDJA Construction is a modern, responsive web application built with React, TypeScript, and Vite. The application serves as a comprehensive digital presence for a construction and renovation services company, featuring bilingual content (English/Spanish), dark/light theme support, and enterprise-grade SEO optimization.
+XDJA Construction is a modern, responsive web application built with React, TypeScript, and Vite. It is the digital presence for a construction and renovation services company, featuring bilingual content (English/Spanish), dark/light theme support, a reviews system backed by an external API, an authenticated admin dashboard, and enterprise-grade SEO optimization.
 
 ## Table of Contents
 
@@ -11,53 +11,112 @@ XDJA Construction is a modern, responsive web application built with React, Type
 3. [Technology Stack](#technology-stack)
 4. [Getting Started](#getting-started)
 5. [Configuration](#configuration)
-6. [Internationalization](#internationalization)
-7. [Theme Management](#theme-management)
-8. [Legal Compliance](#legal-compliance)
-9. [SEO & Metadata](#seo--metadata)
-10. [Deployment](#deployment)
-11. [Best Practices](#best-practices)
+6. [Routing](#routing)
+7. [Internationalization](#internationalization)
+8. [Theme Management](#theme-management)
+9. [Backend Integration](#backend-integration)
+10. [Legal Compliance](#legal-compliance)
+11. [SEO & Metadata](#seo--metadata)
+12. [Deployment](#deployment)
+13. [Best Practices](#best-practices)
+14. [Troubleshooting](#troubleshooting)
 
 ## Project Structure
 
+The UI follows an **Atomic Design** structure under `src/components/`, and every folder exposes a barrel `index.ts`.
+
 ```
 src/
-├── components/           # Reusable React components
-│   ├── NavBar.tsx       # Navigation bar with language switcher
-│   ├── HeroSection.tsx  # Hero section with call-to-action
-│   ├── AboutSection.tsx # About company information
-│   ├── ServicesSection.tsx # Services listing
-│   ├── PortfolioSection.tsx # Project portfolio display
-│   ├── TestimonialsSection.tsx # Client testimonials
-│   ├── ImageScroll.tsx  # Parallax image gallery
-│   ├── ContactSection.tsx # Contact form with WhatsApp integration
-│   ├── Footer.tsx       # Footer with links and contact info
-│   ├── Popup.tsx        # Modal popup component
-│   ├── ThemeToggle.tsx  # Dark/light theme toggle
-│   ├── LanguageSwitcher.tsx # Language selector (ES/EN)
-│   ├── CookieBanner.tsx # Cookie consent banner
-│   └── MobileMenu.tsx   # Mobile navigation menu
-├── hooks/               # Custom React hooks
-│   ├── useResponsive.ts # Responsive design hook
-│   ├── useTheme.ts      # Theme management hook
-│   └── useMediaQuery.ts # Media query hook
-├── i18n/                # Internationalization
-│   ├── translations.json # All translations (ES/EN)
-│   └── I18nProvider.tsx # I18n context provider
-├── pages/               # Full-page components
-│   ├── PrivacyPolicyPage.tsx
-│   ├── CookiesPolicyPage.tsx
-│   └── TermsOfServicePage.tsx
-├── styles/              # SCSS stylesheets
-│   ├── themes.scss      # CSS custom properties for themes
-│   ├── app.scss         # Global app styles
-│   └── [component].scss # Component-specific styles
-├── assets/              # Static assets
-│   ├── Icon/           # SVG icons
-│   └── Images/         # Project images
-├── App.tsx             # Main application component
-└── main.tsx            # Application entry point
+├── components/
+│   ├── atoms/            # Presentational building blocks
+│   │   ├── Button/
+│   │   ├── Icon/         # Icon component + brand icons
+│   │   ├── Input/
+│   │   ├── Label/
+│   │   ├── Logo/
+│   │   ├── Spinner/
+│   │   ├── Turnstile/    # Cloudflare Turnstile captcha widget
+│   │   └── Typography/
+│   ├── molecules/        # Compositions of atoms
+│   │   ├── Card/
+│   │   ├── FormField/
+│   │   ├── ProjectCard/
+│   │   ├── Rating/
+│   │   ├── ReviewCard/
+│   │   └── SectionLink/
+│   ├── organisms/        # Self-contained UI sections
+│   │   ├── AboutSection/
+│   │   ├── Footer/
+│   │   ├── Header/
+│   │   ├── Hero/
+│   │   ├── ProjectsCarousel/
+│   │   ├── ReviewForm/
+│   │   ├── ReviewsSection/
+│   │   └── ServicesGrid/
+│   └── templates/        # Layout shells
+│       ├── AuthLayout/   # Login / admin shell
+│       └── MainLayout/   # Public shell (header, footer, cookie banner, legal modal)
+├── hooks/
+│   ├── useApi.ts              # Data-fetching hooks for the backend
+│   ├── useCopyToClipboard.ts
+│   ├── useMediaQuery.ts
+│   ├── usePortfolioItems.ts   # Static + database project sources
+│   ├── useResponsive.ts
+│   ├── useReviews.ts          # Paginated reviews with filter
+│   ├── useSectionNavigation.ts
+│   └── useTheme.ts
+├── i18n/
+│   ├── I18nProvider.tsx  # Context provider
+│   ├── translations.json # All ES/EN strings
+│   └── useI18n.ts        # Context definition + hook
+├── lib/
+│   └── api.ts            # Typed fetch client for the backend
+├── pages/                # Route-level components
+│   ├── AdminDashboardPage/
+│   ├── CookiesPolicyPage/
+│   ├── HomePage/
+│   ├── LoginPage/
+│   ├── PrivacyPolicyPage/
+│   ├── ProjectsPage/
+│   ├── ReviewsPage/
+│   └── TermsOfServicePage/
+├── routes/
+│   ├── paths.ts          # Centralized route path constants
+│   └── routes.tsx        # React Router configuration
+├── styles/               # SCSS stylesheets (one per section/component)
+│   ├── index.scss        # Import order for all partials
+│   ├── themes.scss       # CSS custom properties for light/dark themes
+│   ├── atoms.scss        # Atomic component styles
+│   ├── app.scss          # Global reset and base styles
+│   └── [component].scss
+├── types/
+│   ├── api.ts            # Backend request/response types
+│   └── portfolio.ts      # PortfolioItem view model
+├── assets/
+│   ├── Icon/             # SVG icon loader
+│   └── Images/           # Project images and metadata
+├── App.tsx               # I18nProvider + router
+└── main.tsx              # Application entry point
 ```
+
+### Path Aliases
+
+Aliases are declared in `vite.config.ts` and `tsconfig.app.json`:
+
+| Alias               | Resolves to             |
+| ------------------- | ----------------------- |
+| `@components/atoms`  | `src/components/atoms`  |
+| `@components/molecules` | `src/components/molecules` |
+| `@components/organisms` | `src/components/organisms` |
+| `@components/templates` | `src/components/templates` |
+| `@routes`            | `src/routes`            |
+| `@hooks`             | `src/hooks`             |
+| `@pages`             | `src/pages`             |
+| `@styles`            | `src/styles`            |
+| `@types_cm`          | `src/types`             |
+| `@i18n`              | `src/i18n`              |
+| `@lib`               | `src/lib`               |
+| `@assets`            | `src/assets`            |
 
 ## Features
 
@@ -65,26 +124,28 @@ src/
 
 - **Responsive Design**: Seamless experience across desktop, tablet, and mobile devices
 - **Bilingual Support**: Full English/Spanish internationalization with persistent language selection
-- **Dark/Light Theme**: User-selectable theme with system preference detection and localStorage persistence
+- **Dark/Light Theme**: User-selectable theme with system preference detection and `localStorage` persistence
 - **Cookie Consent Management**: GDPR-compliant cookie banner with explicit user consent
 - **Legal Documentation**: Complete privacy policy, terms of service, and cookie policy
-- **SEO Optimization**: Comprehensive meta tags, Open Graph, Twitter Cards, and Schema.org structured data
+- **SEO Optimization**: Meta tags, Open Graph, Twitter Cards, and Schema.org structured data
 
 ### Business Features
 
-- **Portfolio Section**: Showcase completed projects with descriptions
-- **Client Testimonials**: Display 5-star reviews from satisfied customers
+- **Projects Page** (`/projects`): Full paginated project catalogue with "load more"
+- **Projects Carousel**: Blurred-backdrop slideshow on the home page mixing static and database projects
+- **Reviews System**: Paginated reviews with per-project filtering, on-demand translation between ES/EN, and a submission form protected by Cloudflare Turnstile
+- **Review Page** (`/reviews`): Dedicated listing with filters and a `?write=1` deep link that opens the review form
+- **Admin Dashboard** (`/admin`): Authenticated project management with image upload to Vercel Blob
 - **Service Listing**: Detailed service descriptions with icons
 - **Contact Integration**: Direct WhatsApp, email, and phone contact options
 - **Lead Generation**: Contact form that integrates with WhatsApp for instant messaging
-- **Professional Branding**: Premium design with consistent visual identity
 
 ### Technical Features
 
-- **Component-Based Architecture**: Reusable, maintainable components
-- **Type-Safe**: Full TypeScript implementation
-- **Performance Optimized**: Lazy loading, code splitting, and optimized bundle size
-- **Accessibility**: WCAG 2.1 compliant with semantic HTML and ARIA labels
+- **Atomic Design**: Scalable component hierarchy (atoms → molecules → organisms → templates)
+- **Type-Safe**: Full TypeScript implementation with a typed API client
+- **Performance Optimized**: Manual vendor chunking, code splitting, and hashed asset output
+- **Accessibility**: Semantic HTML, ARIA labels, and keyboard navigation
 - **Analytics Ready**: Vercel Analytics integration
 
 ## Technology Stack
@@ -93,29 +154,34 @@ src/
 
 - **React 18.3.1**: UI library
 - **TypeScript 5.6.2**: Type-safe JavaScript
-- **Vite 6.0.5**: Next-generation build tool
-- **React Router DOM 7.1.3**: Client-side routing (optional for expansion)
+- **Vite 6.0.5**: Build tool and dev server
+- **React Router DOM 7.18.4**: Client-side routing
 
 ### Styling
 
-- **SCSS 1.83.4**: Advanced CSS preprocessing
-- **Tailwind CSS 4.0.0**: Utility-first CSS framework
-- **Mantine UI 7.16.2**: Component library (available)
+- **SCSS 1.83.4**: CSS preprocessing with BEM naming conventions and CSS custom properties
 
-### Animation
+### UI
 
+- **Bootstrap 5.3.8**: Base CSS utilities and reset
+- **lucide-react 1.48.0**: Icon set
 - **Motion 11.18.1**: React animations and transitions
+
+### Backend & Storage
+
+- **@vercel/blob 2.8.0**: Direct-to-blob image uploads from the admin dashboard
+- **Cloudflare Turnstile**: Captcha protection on the review form
 
 ### Performance & Analytics
 
-- **Vercel Analytics 1.4.1**: Web performance monitoring
-- **React Lazy Load Image Component 1.6.3**: Optimized image loading
+- **@vercel/analytics 1.4.1**: Web performance monitoring
+- **react-lazy-load-image-component 1.6.3**: Optimized image loading
 
 ### Development Tools
 
 - **ESLint 9.17.0**: Code quality
-- **Tailwind CSS Vite Plugin 4.0.0**: Vite integration
-- **PostCSS 8.5.1**: CSS transformation
+- **typescript-eslint 8.18.2**: TypeScript lint rules
+- **eslint-plugin-react-hooks / react-refresh**: Hook and component rules
 
 ## Getting Started
 
@@ -123,7 +189,7 @@ src/
 
 - Node.js 18+ or npm 9+
 - Git
-- Modern web browser
+- A modern web browser
 
 ### Installation
 
@@ -146,44 +212,40 @@ npm install
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+4. Open your browser and navigate to `http://localhost:3000`
 
-### Build for Production
+> The dev server runs on port **3000** and proxies `/api` requests to `http://localhost:4000` (see `vite.config.ts`).
 
-```bash
-npm run build
-```
+### Available Scripts
 
-The optimized build will be generated in the `dist/` directory.
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
-
-### Lint Code
-
-```bash
-npm run lint
-```
+| Script            | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `npm run dev`     | Start the dev server on port 3000 with API proxy |
+| `npm run build`   | Type-check with `tsc -b`, then build to `dist/`  |
+| `npm run lint`    | Run ESLint over the project                     |
+| `npm run preview` | Serve the production build on port 4173         |
 
 ## Configuration
 
 ### Environment Variables
 
-Create a `.env.local` file in the project root (if needed for future features):
+Create a `.env.local` file in the project root:
 
 ```env
-VITE_API_URL=https://api.example.com
-VITE_ANALYTICS_ID=your-analytics-id
+VITE_API_BASE_URL=/api
 ```
+
+| Variable            | Default | Description                                                        |
+| ------------------- | ------- | ------------------------------------------------------------------ |
+| `VITE_API_BASE_URL` | `/api`  | Base URL for all backend calls. In dev, `/api` is proxied to `localhost:4000`. |
+
+Only variables prefixed with `VITE_` are exposed to the client bundle. Never place secrets in them — all privileged operations (project creation, image upload tokens) are authenticated server-side with a bearer token.
 
 ### WhatsApp Integration
 
-The contact form uses WhatsApp Web API. Update the phone number in:
+The contact form uses the WhatsApp Web API. Update the phone number in:
 
-1. `src/components/ContactSection.tsx` (line with `wa.me`)
+1. `src/components/organisms/Hero/Hero.tsx` and `src/components/organisms/Footer/Footer.tsx` (the `wa.me` links)
 2. `src/i18n/translations.json` (contact section)
 
 Current number: `+15743046758`
@@ -192,16 +254,41 @@ Current number: `+15743046758`
 
 Update these files with your company details:
 
-1. `index.html` - Meta tags and Schema.org data
-2. `src/i18n/translations.json` - Company name, descriptions, contact info
-3. `src/components/Footer.tsx` - Footer links and copyright year
-4. `src/components/HeroSection.tsx` - Hero copy
+1. `index.html` — Meta tags and Schema.org data
+2. `src/i18n/translations.json` — Company name, descriptions, contact info
+3. `src/components/organisms/Footer/Footer.tsx` — Footer links and copyright year
+4. `src/components/organisms/Hero/Hero.tsx` — Hero copy
+
+## Routing
+
+Routes are defined in `src/routes/routes.tsx` with `createBrowserRouter`, and path constants live in `src/routes/paths.ts` so that links never hardcode a string.
+
+```tsx
+import { ROUTES } from '@routes/paths';
+
+<Link to={ROUTES.reviews}>Reviews</Link>
+```
+
+| Path        | Component              | Layout       |
+| ----------- | ---------------------- | ------------ |
+| `/`         | `HomePage`             | `MainLayout` |
+| `/projects` | `ProjectsPage`         | `MainLayout` |
+| `/reviews`  | `ReviewsPage`          | `MainLayout` |
+| `/privacy`  | `PrivacyPolicyPage`    | `MainLayout` |
+| `/terms`    | `TermsOfServicePage`   | `MainLayout` |
+| `/cookies`  | `CookiesPolicyPage`    | `MainLayout` |
+| `/login`    | `LoginPage`            | `AuthLayout` |
+| `/admin`    | `AdminDashboardPage`   | `AuthLayout` |
+
+`MainLayout` renders the header, footer, cookie banner, legal modal, and Vercel Analytics. `AuthLayout` is a minimal centered shell for authentication pages.
+
+`/reviews?write=1` opens the review form directly (see `WRITE_REVIEW_PARAM` in `paths.ts`).
 
 ## Internationalization
 
 ### Adding New Translations
 
-Edit `src/i18n/translations.json` and add your keys to both `es` and `en` objects:
+Edit `src/i18n/translations.json` and add your keys to **both** the `es` and `en` objects:
 
 ```json
 {
@@ -220,31 +307,41 @@ Edit `src/i18n/translations.json` and add your keys to both `es` and `en` object
 }
 ```
 
+A helper script is available to merge new keys without overwriting existing text:
+
+```bash
+node mergeTranslations.mjs src/i18n/translations.json src/i18n/translations.additions.json
+```
+
 ### Using Translations in Components
 
-```typescript
-import { useI18n } from '../i18n/I18nProvider';
+```tsx
+import { useI18n } from '@i18n/useI18n';
 
 function MyComponent() {
   const { t, locale, setLocale } = useI18n();
-  
+
   return <h1>{t('newFeature.title')}</h1>;
 }
 ```
 
+`t(key, params)` resolves dot-separated keys against the active locale and interpolates `{placeholder}` tokens. It returns the key itself when a translation is missing, which makes gaps obvious in the UI.
+
 ### Supported Locales
 
-- **es** - Spanish
-- **en** - English (default)
+- **en** — English (default)
+- **es** — Spanish
+
+The active locale is persisted in `localStorage` under `xdja-locale` and mirrored to `document.documentElement.lang`.
 
 ## Theme Management
 
 ### Theme System
 
-The application uses CSS custom properties (variables) for theming. Themes are defined in `src/styles/themes.scss`:
+The application uses CSS custom properties for theming. Themes are defined in `src/styles/themes.scss` and toggled via the `data-theme` attribute on the root element.
 
 - **Light Theme**: Default, based on `--color-bg`, `--color-text`, etc.
-- **Dark Theme**: Applied when `html[data-theme="dark"]` or `html.dark` is set
+- **Dark Theme**: Applied when the root element carries the dark theme attribute
 
 ### Using Themes in Components
 
@@ -271,37 +368,54 @@ The application uses CSS custom properties (variables) for theming. Themes are d
 --color-card            // Card background
 ```
 
+## Backend Integration
+
+All backend communication goes through the typed client in `src/lib/api.ts`. It wraps `fetch`, parses JSON responses, and throws an `ApiError` carrying the HTTP status and optional field-level `details`.
+
+### Endpoints Used
+
+| Method   | Endpoint                          | Purpose                                  | Auth |
+| -------- | --------------------------------- | ---------------------------------------- | ---- |
+| `GET`    | `/api/health`                     | Health check                             | No   |
+| `POST`   | `/api/auth/login`                 | Admin login, returns a bearer token       | No   |
+| `GET`    | `/api/projects`                   | Paginated projects                       | No   |
+| `GET`    | `/api/projects/:id`               | Single project                           | No   |
+| `POST`   | `/api/projects`                   | Create a project                         | Yes  |
+| `GET`    | `/api/projects/upload-token`      | Request a direct upload token            | Yes  |
+| `POST`   | `/api/projects/upload`            | Base64 image upload fallback             | Yes  |
+| `GET`    | `/api/reviews`                    | Paginated reviews, optional project filter | No |
+| `GET`    | `/api/reviews/project/:projectId` | Reviews for a single project             | No   |
+| `GET`    | `/api/reviews/:id/translate`      | Translate a review to `es` or `en`       | No   |
+| `POST`   | `/api/reviews`                    | Submit a review (Turnstile-protected)    | No   |
+
+### Authentication
+
+The admin session token is stored in `localStorage` under `xdja-auth-token` and attached as a `Authorization: Bearer <token>` header by `api.getAuthHeaders()`. Only requests to privileged endpoints include it.
+
+### Uploads
+
+`AdminDashboardPage` uploads images to Vercel Blob using a short-lived token requested from the backend (`uploadImageDirect`), with a base64 endpoint as a fallback (`uploadImage` / `uploadImageBase64`).
+
+### Data Loading Strategy
+
+- `usePortfolioItems.ts` merges two sources: static projects from `ImagesLoader` and database projects. The carousel takes `CAROUSEL_MAX_ITEMS` (10) slides total, the `/projects` page paginates with "load more".
+- `useReviews.ts` guards against out-of-order responses with a request-id ref, which matters when the project filter changes quickly.
+
 ## Legal Compliance
 
-### Privacy Policy
+### Privacy Policy, Cookie Policy, and Terms of Service
 
-The application includes a comprehensive privacy policy that specifies:
+All three documents are rendered as pages and as a modal (opened from the footer):
 
-- Data collection practices (minimal by design)
-- Data usage (only for customer inquiries)
-- No data sharing with third parties
-- Security measures
-- Cookie usage
+- `src/pages/PrivacyPolicyPage/PrivacyPolicyPage.tsx`
+- `src/pages/CookiesPolicyPage/CookiesPolicyPage.tsx`
+- `src/pages/TermsOfServicePage/TermsOfServicePage.tsx`
 
-**Location**: `src/pages/PrivacyPolicyPage.tsx`
-
-### Cookie Policy
-
-Explains the use of functional cookies for theme/language preference storage.
-
-**Location**: `src/pages/CookiesPolicyPage.tsx`
-
-### Terms of Service
-
-Standard terms covering acceptable use, liability limitations, and service modifications.
-
-**Location**: `src/pages/TermsOfServicePage.tsx`
+The privacy policy specifies data collection practices (minimal by design), data usage (only for customer inquiries), no third-party data sharing, security measures, and cookie usage. The cookie policy explains the use of functional cookies for theme and language preference storage.
 
 ### Cookie Consent Banner
 
-Displays on first visit with options to accept or decline functional cookies.
-
-**Location**: `src/components/CookieBanner.tsx`
+`src/components/templates/MainLayout/CookieBanner.tsx` displays on first visit with options to accept or decline functional cookies. Consent is persisted in `localStorage` under `xdja-cookies-consent`.
 
 **Important Notes**:
 
@@ -312,40 +426,19 @@ Displays on first visit with options to accept or decline functional cookies.
 
 ## SEO & Metadata
 
-### Meta Tags Implementation
+### Meta Tags
 
-The application includes comprehensive meta tags in `index.html`:
+`index.html` contains the title, description, keywords, author, and robots directives.
 
-- **Title**: Page title for SERPs
-- **Description**: Meta description (155-160 characters)
-- **Keywords**: Relevant search terms
-- **Author**: Company name
-- **Robots**: Indexing directives
+### Open Graph and Twitter Cards
 
-### Open Graph Tags
-
-Enables rich previews on social media:
-
-- Facebook sharing
-- LinkedIn integration
-- WhatsApp preview thumbnails
-
-### Twitter Cards
-
-Enables summary cards with image for Twitter sharing.
+Enable rich previews on Facebook, LinkedIn, WhatsApp, and Twitter.
 
 ### Structured Data (Schema.org)
 
-Implements LocalBusiness schema for:
+Implements `LocalBusiness` schema for business name, address, phone, ratings, social links, and category.
 
-- Business name, address, phone
-- Rating and review count
-- Social media links
-- Business category
-
-**Current Data**:
-
-```javascript
+```json
 {
   "@type": "LocalBusiness",
   "name": "XDJA Construction LLC",
@@ -367,23 +460,27 @@ Set to `https://xdja.vercel.app` to prevent duplicate content issues.
 
 For production deployment, add:
 
-1. `public/sitemap.xml` - Site structure for search engines
-2. `public/robots.txt` - Crawling directives
+1. `public/sitemap.xml` — Site structure for search engines
+2. `public/robots.txt` — Crawling directives
 
 ## Deployment
 
 ### Vercel (Recommended)
 
 1. Push your code to GitHub
-2. Connect repository to Vercel
-3. Vercel auto-detects Vite configuration
-4. Deploy on push to main branch
+2. Connect the repository to Vercel
+3. Vercel auto-detects the Vite configuration
+4. Deploy on push to the `main` branch
 
-### Environment Setup
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full deployment checklist.
 
-1. Update domain in `index.html` meta tags
-2. Configure environment variables in Vercel dashboard
-3. Verify all redirects and rewrites
+### SPA Routing
+
+Because the app uses `createBrowserRouter`, configure a rewrite so client-side routes fall back to `index.html`:
+
+```json
+{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+```
 
 ### Pre-Deployment Checklist
 
@@ -395,6 +492,8 @@ For production deployment, add:
 - [ ] Verify dark/light theme switching
 - [ ] Test language switching (ES/EN)
 - [ ] Verify cookie banner appears on first visit
+- [ ] Test the reviews list, project filter, translation, and form submission
+- [ ] Verify image upload from the admin dashboard
 - [ ] Test responsive design on mobile/tablet
 - [ ] Run Lighthouse audit for performance/SEO
 - [ ] Review legal pages for jurisdiction compliance
@@ -403,97 +502,100 @@ For production deployment, add:
 
 ### Performance Optimization
 
-- Vite optimizes bundle size automatically
-- Code splitting per route (if using Router)
+- Vite optimizes bundle size automatically, with manual chunks for React, Motion, and Analytics
+- Routes are split by the router and heavy sections are loaded per page
 - Lazy loading for images via `react-lazy-load-image-component`
 - CSS variables for efficient theming
-- Minimal JavaScript for fast Time to Interactive (TTI)
 
 ## Best Practices
 
 ### Component Development
 
 1. **Keep Components Small**: Each component should have a single responsibility
-2. **Use TypeScript**: Define prop interfaces for all components
-3. **Accessibility**: Always include semantic HTML and ARIA labels
-4. **Styling**: Use SCSS variables and follow BEM naming convention
+2. **Pick the Right Tier**: atoms are presentational, molecules compose atoms, organisms are full sections, templates are page shells
+3. **Use TypeScript**: Define prop interfaces for all components
+4. **Accessibility**: Always include semantic HTML and ARIA labels
+5. **Styling**: Use SCSS variables and follow BEM naming conventions
+
+### Styling
+
+`src/styles/index.scss` defines the import order. Order matters: themes and atoms load first so sections can override them, and `layoutFixes.scss` loads last as a compatibility layer.
 
 ### Performance
 
-1. **Lazy Load Images**: Use `LazyLoadImage` component for off-screen images
-2. **Optimize Bundle**: Review bundle size with `npm run build -- --report`
+1. **Lazy Load Images**: Use `LazyLoadImage` for off-screen images
+2. **Keep Bundle Lean**: Review chunk sizes in the `npm run build` output
 3. **Cache Strategy**: Configure browser cache headers for static assets
-4. **Minification**: Vite automatically minifies for production
+4. **Minification**: Vite minifies automatically for production
 
 ### Security
 
-1. **No Sensitive Data in Frontend**: All credentials must be server-side
-2. **Content Security Policy**: Add CSP headers to Vercel config if needed
+1. **No Sensitive Data in Frontend**: All credentials must be server-side; `VITE_*` variables are public
+2. **Content Security Policy**: Add CSP headers to the Vercel config if needed
 3. **HTTPS Only**: Always use HTTPS in production
 4. **XSS Prevention**: Never use `dangerouslySetInnerHTML` with user input
 
 ### SEO
 
 1. **Keywords**: Use target keywords naturally in headings and content
-2. **Internal Links**: Link between sections to improve crawlability
-3. **Page Speed**: Aim for Lighthouse score > 90
+2. **Internal Links**: Link between pages and sections to improve crawlability
+3. **Page Speed**: Aim for a Lighthouse score above 90
 4. **Mobile First**: Test extensively on mobile devices
 5. **Structured Data**: Validate Schema.org JSON-LD with Google's tool
 
 ### Maintenance
 
 1. **Dependencies**: Run `npm audit` regularly for security updates
-2. **Type Safety**: Enable strict TypeScript rules in `tsconfig.app.json`
-3. **Logging**: Use console sparingly; remove before production
+2. **Type Safety**: Keep strict TypeScript rules in `tsconfig.app.json`
+3. **Logging**: Use `console` sparingly; remove before production
 4. **Git Workflow**: Use feature branches and pull requests for changes
+5. **Comments in English**: Keep code comments in English so the whole codebase is consistent
 
 ## File Naming Conventions
 
-- **Components**: PascalCase (e.g., `HeroSection.tsx`)
-- **Hooks**: camelCase with `use` prefix (e.g., `useResponsive.ts`)
-- **Styles**: lowercase with hyphens (e.g., `hero-section.scss`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `API_URL`)
-- **Types**: PascalCase (e.g., `ComponentProps`)
+- **Components**: PascalCase, one folder per component (e.g., `ProjectCard/ProjectCard.tsx`)
+- **Hooks**: camelCase with a `use` prefix (e.g., `usePortfolioItems.ts`)
+- **Styles**: camelCase matching the component (e.g., `projectsPage.scss`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `CAROUSEL_MAX_ITEMS`)
+- **Types**: PascalCase (e.g., `PortfolioItem`)
 
 ## Troubleshooting
 
 ### Build Errors
 
-**TypeScript Errors**:
+**TypeScript errors**:
 
 ```bash
 npm run build
 ```
 
-Fix any reported type mismatches in editor before deploying.
+Fix any reported type mismatches before deploying.
 
-**ESLint Warnings**:
+**ESLint errors**:
 
 ```bash
-npm run lint -- --fix
+npm run lint
 ```
-
-Automatic fix for common issues.
 
 ### Runtime Issues
 
-**Theme Not Persisting**:
+**Backend calls fail in development**:
+Vite proxies `/api` to `http://localhost:4000`. Confirm the backend is running, or set `VITE_API_BASE_URL` to the backend URL.
 
-1. Check `localStorage` in browser DevTools
-2. Verify `xdja-theme` key is being set
-3. Check for localStorage permission issues
+**Theme not persisting**:
+Check `localStorage` in DevTools and verify the `xdja-theme` key is being set.
 
-**Language Not Changing**:
+**Language not changing**:
+Verify `I18nProvider` wraps the app in `App.tsx`, that the keys exist in `translations.json`, and inspect `xdja-locale` in `localStorage`.
 
-1. Verify I18nProvider wraps entire app
-2. Check translation keys exist in `translations.json`
-3. Inspect `xdja-locale` in localStorage
+**Cookie banner keeps appearing**:
+Clear localStorage and reload; consent is stored under `xdja-cookies-consent`.
 
-**Cookies Banner Not Appearing**:
+**Reviews render raw keys**:
+`t()` returns the key when a translation is missing. Add the key to both `es` and `en` in `translations.json`.
 
-1. Clear browser cookies and localStorage
-2. Verify `cookiesConsent` state in App.tsx
-3. Check CookieBanner component renders when null
+**Deep links 404 after deployment**:
+Add the SPA rewrite to `index.html` (see [Deployment](#deployment)).
 
 ## Support & Contact
 
@@ -508,17 +610,25 @@ Copyright 2025 XDJA Construction LLC. All rights reserved.
 
 ## Version History
 
-### 2.0.0 (Current - Production Ready)
+### 2.1.0 (Current)
 
-- Complete refactor to single responsive codebase
+- Added `/projects` page with paginated project catalogue
+- Added `/reviews` page with project filter, on-demand translation, and Turnstile-protected form
+- Refactored routing into `MainLayout` / `AuthLayout` with centralized path constants
+- Rebuilt the portfolio section as `ProjectsCarousel` with a blurred backdrop
+- Added `ProjectCard`, `SectionLink`, and brand icon components
+- Added `usePortfolioItems`, `useReviews`, `useSectionNavigation`, and `useCopyToClipboard` hooks
+- Translated all code comments to English
+
+### 2.0.0
+
+- Complete refactor to a single responsive codebase
 - Added bilingual support (English/Spanish)
 - Implemented comprehensive legal documentation
 - Added cookie consent management
 - Implemented dark/light theme system
-- Added portfolio and testimonials sections
 - Full SEO optimization with meta tags and Schema.org
-- Mobile menu implementation
-- Contact form WhatsApp integration
+- Mobile menu and WhatsApp contact integration
 
 ### 1.0.0 (Legacy)
 
@@ -527,6 +637,6 @@ Copyright 2025 XDJA Construction LLC. All rights reserved.
 
 ---
 
-**Last Updated**: 2025-09-26
+**Last Updated**: 2026-09-28
 
 **Maintained By**: XDJA Construction Development Team

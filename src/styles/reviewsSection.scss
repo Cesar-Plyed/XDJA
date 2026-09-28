@@ -29,8 +29,22 @@
 
   &__actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
+    gap: 1rem 1.5rem;
     margin-bottom: 2.5rem;
+  }
+
+  &__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
   }
 
   &__write-link {

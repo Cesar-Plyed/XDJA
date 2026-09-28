@@ -1,6 +1,6 @@
 @use './themes.scss';
 
-/* Ajustes para las clases nuevas del refactor (hero, footer, cookies, modales, etc.) */
+/* Adjustments for the new refactor classes (hero, footer, cookies, modals, etc.) */
 
 /* ---------- Hero ---------- */
 .hero {
@@ -9,8 +9,8 @@
 
   &__background { position: absolute; inset: 0; pointer-events: none; }
   &__container { position: relative; width: 100%; max-width: 1200px; margin: 0 auto; }
-  // Decoración nueva: escóndela para conservar el hero original centrado.
-  // Quita estas dos líneas si quieres mostrarla.
+  // New decoration: hidden to keep the original centered hero.
+  // Remove these two lines if you want to show it.
   &__visual, &__scroll-indicator { display: none; }
   &__scroll-icon { transform: rotate(90deg); }
 }
@@ -58,7 +58,7 @@
   .cookie-banner__container { flex-direction: column; align-items: stretch; }
 }
 
-/* ---------- Legal modal / páginas legales ---------- */
+/* ---------- Legal modal / legal pages ---------- */
 .legal-modal__section-text { margin: 0; line-height: 1.7; }
 
 .legal-page {
@@ -69,6 +69,6 @@
   &__section-text { margin: 0; line-height: 1.8; }
 }
 
-/* ---------- Layout de autenticación ---------- */
+/* ---------- Auth layout ---------- */
 .auth-layout { min-height: 100vh; }
 .auth-main { align-items: center; justify-content: center; }

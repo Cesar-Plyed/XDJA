@@ -59,7 +59,12 @@
       "loading": "Cargando proyectos...",
       "error": "No pudimos cargar los proyectos. Intenta de nuevo más tarde.",
       "prev": "Proyecto anterior",
-      "next": "Proyecto siguiente"
+      "next": "Proyecto siguiente",
+      "view_more": "Ver más proyectos",
+      "page_title": "Todos nuestros proyectos",
+      "page_subtitle": "Explora el trabajo que hemos realizado para nuestros clientes.",
+      "back": "Volver al portafolio",
+      "load_more": "Cargar más proyectos"
     },
     "testimonials": {
       "title": "Lo Que Dicen Nuestros Clientes",
@@ -138,7 +143,11 @@
       "follow_us": "Síguenos",
       "company": "Empresa",
       "legal": "Legal",
-      "quick_links": "Enlaces rápidos"
+      "quick_links": "Enlaces rápidos",
+      "copy_link": "Copiar enlace de esta página",
+      "link_copied": "¡Enlace copiado!",
+      "copy_error": "No se pudo copiar el enlace",
+      "facebook": "Visítanos en Facebook"
     },
     "cookies": {
       "banner_title": "Uso de Cookies y Privacidad",
@@ -347,7 +356,12 @@
       "error": "We couldn't load the projects. Please try again later.",
       "no_projects": "Our projects will be published soon.",
       "prev": "Previous project",
-      "next": "Next project"
+      "next": "Next project",
+      "view_more": "See more projects",
+      "page_title": "All our projects",
+      "page_subtitle": "Explore the work we have completed for our clients.",
+      "back": "Back to portfolio",
+      "load_more": "Load more projects"
     },
     "testimonials": {
       "title": "What Our Clients Say",
@@ -420,7 +434,11 @@
       "form_required": "This field is required"
     },
     "footer": {
-      "copyright": "© 2025 XDJA Construction LLC. All rights reserved.",
+      "copyright": "© {year} XDJA Construction LLC. All rights reserved.",
+      "copy_link": "Copy this page link",
+      "link_copied": "Link copied!",
+      "copy_error": "Couldn't copy the link",
+      "facebook": "Visit us on Facebook",
       "description": "Leaders in construction and space renovation with excellence.",
       "contact_us": "Contact Us",
       "follow_us": "Follow Us",

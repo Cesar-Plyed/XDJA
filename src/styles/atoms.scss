@@ -143,7 +143,7 @@
     &--left { left: 0.85rem; pointer-events: none; }
     &--right { right: 0.5rem; }
   }
-  // deja espacio al icono
+  // leaves room for the icon
   &__inner:has(.input__icon--left) .input__field { padding-left: 2.6rem; }
   &__inner:has(.input__icon--right) .input__field { padding-right: 2.6rem; }
 
@@ -198,7 +198,7 @@
     &--right { justify-content: flex-end; }
   }
 
-  // cuando la tarjeta no tiene padding, las secciones internas lo llevan
+  // when the card has no padding, the inner sections provide it
   &--padding-none > .card__header,
   &--padding-none > .card__body,
   &--padding-none > .card__footer { padding: 1.25rem 1.5rem; }

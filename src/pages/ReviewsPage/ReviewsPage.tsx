@@ -1,4 +1,6 @@
-import { ChangeEvent, FC, useMemo, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { WRITE_REVIEW_PARAM } from '@routes/paths';
 import { useProjects } from '@hooks/useApi';
 import { useI18n } from '@i18n/useI18n';
 import type { Review } from '@lib/api';
@@ -18,6 +20,7 @@ export const ReviewsPage: FC = () => {
 
   const [filterProjectId, setFilterProjectId] = useState('');
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const { items, total, loading, loadingMore, error, hasMore, loadMore, refetch, prepend } =
     useReviews(filterProjectId || null, 9);
 
@@ -27,7 +30,7 @@ export const ReviewsPage: FC = () => {
   );
 
   const handleCreated = (review: Review) => {
-    // Solo la mostramos arriba si encaja con el filtro activo
+    // Only prepend it when it matches the active filter
     if (!filterProjectId || review.projectId === filterProjectId) prepend(review);
   };
 
@@ -85,6 +88,14 @@ export const ReviewsPage: FC = () => {
       </>
     );
   };
+
+  useEffect(() => {
+    if (!searchParams.has(WRITE_REVIEW_PARAM)) return;
+    setShowReviewForm(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete(WRITE_REVIEW_PARAM);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   return (
     <section className="reviews-page" aria-labelledby="reviews-page-title">

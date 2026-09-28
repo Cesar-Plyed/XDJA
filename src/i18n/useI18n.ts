@@ -5,7 +5,7 @@ export type Locale = 'es' | 'en';
 export interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 export const I18nContext = createContext<I18nContextType | undefined>(undefined);
