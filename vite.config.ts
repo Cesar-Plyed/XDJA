@@ -1,8 +1,29 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@components/atoms": path.resolve(__dirname, "./src/components/atoms"),
+      "@components/molecules": path.resolve(__dirname, "./src/components/molecules"),
+      "@components/organisms": path.resolve(__dirname, "./src/components/organisms"),
+      "@components/templates": path.resolve(__dirname, "./src/components/templates"),
+      "@routes": path.resolve(__dirname, "./src/routes"),
+      "@hooks": path.resolve(__dirname, "./src/hooks"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
+      "@styles": path.resolve(__dirname, "./src/styles"),
+      "@types_cm": path.resolve(__dirname, "./src/types"),
+      "@i18n": path.resolve(__dirname, "./src/i18n"),
+      "@lib": path.resolve(__dirname, "./src/lib"),
+      '@assets': path.resolve(__dirname, 'src/assets'),
+    },
+  },
   build: {
     minify: "esbuild",
     cssMinify: true,
@@ -35,6 +56,12 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port: 4173,

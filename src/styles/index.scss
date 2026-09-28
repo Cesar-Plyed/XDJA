@@ -1,0 +1,33 @@
+// 1) Tema + base + componentes atómicos (van primero para que las secciones puedan sobrescribir)
+@use './themes.scss';
+@use './app.scss';
+@use './atoms.scss';
+
+// 2) Layout
+@use './header.scss';
+@use './footer.scss';
+
+// 3) Secciones de la home
+@use './heroSection.scss';
+@use './aboutSection.scss';
+@use './servicesSection.scss';
+@use './reviewsSection.scss';
+@use './portfolioSection.scss';
+@use './projectsCarousel.scss';
+@use './testimonialsSection.scss';
+@use './contactSection.scss';
+@use './information.scss';
+@use './imagesScroll.scss';
+
+// 4) Componentes sueltos
+@use './cookieBanner.scss';
+@use './popup.scss';
+@use './legalPages.scss';
+
+// 5) Páginas nuevas (login / admin / reseñas)
+@use './loginPage.scss';
+@use './adminPage.scss';
+@use './reviewsPage.scss';
+
+// 6) Ajustes de las clases nuevas del refactor (siempre al final)
+@use './layoutFixes.scss';
