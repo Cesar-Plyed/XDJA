@@ -1,54 +1,37 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import translations from './translations.json';
+import { type Locale, I18nContext } from './useI18n';
 
-type Locale = 'es' | 'en';
+const STORAGE_KEY = 'xdja-locale';
 
-interface I18nContextType {
-  locale: Locale;
-  setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
-}
+const isLocale = (value: unknown): value is Locale => value === 'es' || value === 'en';
 
-const I18nContext = createContext<I18nContextType | undefined>(undefined);
+const getInitialLocale = (): Locale => {
+  if (typeof window === 'undefined') return 'en';
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return isLocale(saved) ? saved : 'en';
+};
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    if (typeof window === 'undefined') return 'en';
-    const saved = localStorage.getItem('xdja-locale');
-    return (saved as Locale) || 'en';
-  });
+  const [locale, setLocale] = useState<Locale>(getInitialLocale);
 
   useEffect(() => {
-    localStorage.setItem('xdja-locale', locale);
+    localStorage.setItem(STORAGE_KEY, locale);
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const setLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale);
-  };
-
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: unknown = translations[locale];
-
-    for (const k of keys) {
-      value = (value as Record<string, unknown>)?.[k] ?? key;
-    }
-
-    return (value as string) || key;
-  };
-
-  return (
-    <I18nContext.Provider value={{ locale, setLocale, t }}>
-      {children}
-    </I18nContext.Provider>
+  const t = useCallback(
+    (key: string, params?: Record<string, string | number>): string => {
+      const value = key
+        .split('.')
+        .reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], translations[locale]);
+      const text = typeof value === 'string' ? value : key;
+      return params ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match)) : text;
+    },
+    [locale]
   );
-}
 
-export function useI18n() {
-  const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error('useI18n must be used within I18nProvider');
-  }
-  return context;
+  const contextValue = useMemo(() => ({ locale, setLocale, t }), [locale, t]);
+
+  return <I18nContext.Provider value={contextValue}>{children}</I18nContext.Provider>;
 }

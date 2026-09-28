@@ -1,0 +1,77 @@
+@use './themes.scss';
+
+.login-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-secondary) 100%);
+
+  &__background { position: absolute; inset: 0; pointer-events: none; }
+  &__shape {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0.12;
+    filter: blur(60px);
+    animation: login-float 12s ease-in-out infinite;
+
+    &--1 { width: 320px; height: 320px; top: -80px; left: -80px; }
+    &--2 { width: 260px; height: 260px; bottom: -60px; right: 8%; animation-delay: -4s; }
+    &--3 { width: 200px; height: 200px; top: 40%; right: -60px; animation-delay: -8s; }
+  }
+
+  &__container { position: relative; z-index: 1; width: 100%; max-width: 440px; }
+  &__card { width: 100%; }
+
+  &__header { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 100%; text-align: center; }
+  &__logo { display: flex; align-items: center; gap: 0.6rem; }
+  &__logo-icon { color: var(--color-accent); }
+  &__logo-text { margin: 0; letter-spacing: 0.05em; }
+  &__title { margin: 0.5rem 0 0; }
+  &__subtitle { margin: 0; }
+
+  &__body { padding-top: 0; }
+  &__form { display: flex; flex-direction: column; gap: 0.25rem; }
+
+  &__error {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  &__options { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0.25rem 0 1.25rem; flex-wrap: wrap; }
+  &__checkbox { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+  &__checkbox-input { width: 1rem; height: 1rem; accent-color: var(--color-accent); cursor: pointer; }
+  &__checkbox-label { font-size: 0.875rem; color: var(--color-text-secondary); }
+  &__forgot-link { font-size: 0.875rem; color: var(--color-accent); &:hover { text-decoration: underline; } }
+
+  &__submit-btn { width: 100%; }
+
+  &__demo {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    background-color: var(--color-bg-secondary);
+    border: 1px dashed var(--color-border);
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  &__demo-text { display: block; margin-bottom: 0.35rem; }
+  &__demo-credentials { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-text); }
+
+  &__footer { border-top: 1px solid var(--color-border); }
+  &__back-link { color: var(--color-text-secondary); }
+}
+
+@keyframes login-float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -25px); }
+}
