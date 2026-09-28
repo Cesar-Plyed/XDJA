@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from '@hooks/useTheme';
 import { useI18n } from '@i18n/useI18n';
 import { Typography } from '@components/atoms/Typography/Typography';
@@ -12,6 +12,7 @@ import { Logo } from '@components/atoms/Logo/Logo';
 export const Header: FC = () => {
   const { locale, setLocale, t } = useI18n();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -27,14 +28,19 @@ export const Header: FC = () => {
     { to: '#about', label: t('nav.about') },
     { to: '#services', label: t('nav.services') },
     { to: '#portfolio', label: t('nav.portfolio') },
-    { to: '#reviews', label: t('nav.reviews') },
+    { to: '/reviews', label: t('nav.reviews') },
     { to: '#contact', label: t('nav.contact') },
   ];
 
-  const handleScrollTo = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavClick = (to: string, e: React.MouseEvent) => {
+    if (to.startsWith('#')) {
+      e.preventDefault();
+      const element = document.querySelector(to);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+      setIsMobileMenuOpen(false);
+    } else {
       setIsMobileMenuOpen(false);
     }
   };
@@ -56,10 +62,7 @@ export const Header: FC = () => {
                 <NavItem
                   to={item.to}
                   label={item.label}
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    handleScrollTo(item.to);
-                  }}
+                  onClick={(e: React.MouseEvent) => handleNavClick(item.to, e)}
                 />
               </li>
             ))}
@@ -126,7 +129,17 @@ export const Header: FC = () => {
                 <li key={item.to}>
                   <button
                     className="header__mobile-nav-link"
-                    onClick={() => handleScrollTo(item.to)}
+                    onClick={() => {
+                      if (item.to.startsWith('#')) {
+                        const element = document.querySelector(item.to);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      } else {
+                        navigate(item.to);
+                      }
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     {item.label}
                   </button>

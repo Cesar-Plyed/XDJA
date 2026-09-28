@@ -21,12 +21,10 @@
   &__cta { margin-top: 0.75rem; }
 
   &__layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 400px;
-    gap: 2rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
-  &__form { position: sticky; top: 6rem; }
 
   &__toolbar {
     display: flex;
@@ -51,6 +49,42 @@
     text-align: center;
   }
   &__state-icon { opacity: 0.4; }
+
+  &__modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.55);
+    animation: reviews-fade 0.2s ease-out;
+    overflow-y: auto;
+  }
+
+  &__modal {
+    width: 100%;
+    max-width: 560px;
+    background-color: var(--color-bg);
+    border-radius: 0.75rem;
+    box-shadow: 0 24px 60px var(--color-shadow-hover);
+    overflow: hidden;
+  }
+
+  &__modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__modal-body {
+    padding: 1.5rem;
+    max-height: calc(90vh - 60px);
+    overflow-y: auto;
+  }
 }
 
 /* Tarjeta de review (extras sobre reviewsSection.scss) */
@@ -112,8 +146,7 @@
 
 @media (max-width: 960px) {
   .reviews-page {
-    &__layout { grid-template-columns: 1fr; }
-    &__form { position: static; order: -1; } // el formulario va arriba en móvil
+    &__layout { gap: 1rem; }
   }
 }
 

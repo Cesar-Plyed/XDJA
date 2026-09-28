@@ -17,6 +17,7 @@ export const ReviewsPage: FC = () => {
   const projects = useMemo(() => projectsData?.items ?? [], [projectsData]);
 
   const [filterProjectId, setFilterProjectId] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const { items, total, loading, loadingMore, error, hasMore, loadMore, refetch, prepend } =
     useReviews(filterProjectId || null, 9);
 
@@ -28,12 +29,6 @@ export const ReviewsPage: FC = () => {
   const handleCreated = (review: Review) => {
     // Solo la mostramos arriba si encaja con el filtro activo
     if (!filterProjectId || review.projectId === filterProjectId) prepend(review);
-  };
-
-  const scrollToForm = () => {
-    const form = document.getElementById('write-review');
-    form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('review-description')?.focus({ preventScroll: true });
   };
 
   const renderList = () => {
@@ -104,7 +99,7 @@ export const ReviewsPage: FC = () => {
           <Button
             variant="primary"
             leftIcon={<Icon name="messageSquare" size={18} />}
-            onClick={scrollToForm}
+            onClick={() => setShowReviewForm(true)}
             className="reviews-page__cta"
           >
             {t('reviews.write_review')}
@@ -113,36 +108,59 @@ export const ReviewsPage: FC = () => {
 
         <div className="reviews-page__layout">
           <div className="reviews-page__list">
-            <div className="reviews-page__toolbar">
-              <span className="reviews-page__count" aria-live="polite">
-                {loading ? '' : `${total} ${t('reviews.count_label')}`}
-              </span>
+          <div className="reviews-page__toolbar">
+            <span className="reviews-page__count" aria-live="polite">
+              {loading ? '' : `${total} ${t('reviews.count_label')}`}
+            </span>
 
-              {projects.length > 0 && (
-                <div className="reviews-page__filter">
-                  <Label htmlFor="reviews-filter">{t('reviews.filter_label')}</Label>
-                  <select
-                    id="reviews-filter"
-                    className="input__field review-form__select"
-                    value={filterProjectId}
-                    onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilterProjectId(e.target.value)}
-                  >
-                    <option value="">{t('reviews.filter_all')}</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>{project.title}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {renderList()}
+            {projects.length > 0 && (
+              <div className="reviews-page__filter">
+                <Label htmlFor="reviews-filter">{t('reviews.filter_label')}</Label>
+                <select
+                  id="reviews-filter"
+                  className="input__field review-form__select"
+                  value={filterProjectId}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilterProjectId(e.target.value)}
+                >
+                  <option value="">{t('reviews.filter_all')}</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>{project.title}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
-          <aside id="write-review" className="reviews-page__form">
-            <ReviewForm projects={projects} onCreated={handleCreated} />
-          </aside>
+          {renderList()}
         </div>
+      </div>
+
+      {showReviewForm && (
+        <div className="reviews-page__modal-overlay" onClick={() => setShowReviewForm(false)}>
+          <div className="reviews-page__modal" onClick={(e) => e.stopPropagation()}>
+            <div className="reviews-page__modal-header">
+              <Typography variant="h3" weight="bold">{t('reviews.write_review')}</Typography>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReviewForm(false)}
+                aria-label={t('common.close')}
+              >
+                <Icon name="x" size={24} />
+              </Button>
+            </div>
+            <div className="reviews-page__modal-body">
+              <ReviewForm
+                projects={projects}
+                onCreated={(review) => {
+                  handleCreated(review);
+                  setShowReviewForm(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </section>
   );
