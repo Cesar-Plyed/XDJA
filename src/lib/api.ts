@@ -8,6 +8,7 @@ import type {
   HealthResponse,
   ApiErrorResponse,
 } from '../types/api';
+import { upload } from '@vercel/blob/client';
 
 export type { Project, Review, PaginatedProjects, PaginatedReviews } from '../types/api';
 
@@ -96,54 +97,17 @@ export const api = {
     return handleResponse<Project>(response);
   },
 
-  async getUploadToken(): Promise<{ uploadToken: string }> {
-    const response = await fetch(`${API_BASE_URL}/projects/upload-token`, {
-      headers: { ...this.getAuthHeaders() },
+  async uploadImage(file: File): Promise<string> {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const blob = await upload(`projects/${safeName}`, file, {
+      access: 'public',
+      handleUploadUrl: `${API_BASE_URL}/projects/upload-token`,
+      headers: this.getAuthHeaders(),
     });
-    return handleResponse<{ uploadToken: string }>(response);
-  },
-
-  async uploadImageDirect(file: File): Promise<string> {
-    const { uploadToken } = await this.getUploadToken();
-    const formData = new FormData();
-    formData.set('file', file);
-    const uploadResponse = await fetch('https://api.vercel.com/api/v1/blob/upload', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${uploadToken}` },
-      body: formData,
-    });
-    if (!uploadResponse.ok) {
-      throw new ApiError('Upload failed', uploadResponse.status);
-    }
-    const blob = await uploadResponse.json();
     return blob.url;
   },
 
-  async uploadImage(file: File): Promise<string> {
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-    const result = await this.uploadImageBase64({
-      fileName: file.name,
-      mimeType: file.type,
-      base64,
-    });
-    return result.url;
-  },
-
-  async uploadImageBase64(data: { fileName: string; mimeType: string; base64: string }): Promise<{ url: string }> {
-    const response = await fetch(`${API_BASE_URL}/projects/upload`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...this.getAuthHeaders() },
-      body: JSON.stringify(data),
-    });
-    return handleResponse<{ url: string }>(response);
-  },
-
-   async getReviewsByProject(projectId: string, page = 1, pageSize = 10): Promise<PaginatedReviews> {
+  async getReviewsByProject(projectId: string, page = 1, pageSize = 10): Promise<PaginatedReviews> {
     const response = await fetch(`${API_BASE_URL}/reviews/project/${projectId}?page=${page}&pageSize=${pageSize}`);
     return handleResponse<PaginatedReviews>(response);
   },

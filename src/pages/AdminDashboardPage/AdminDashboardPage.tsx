@@ -91,12 +91,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
         }
 
         try {
-          let url: string;
-          try {
-            url = await api.uploadImageDirect(file);
-          } catch {
-            url = await api.uploadImage(file);
-          }
+          const url = await api.uploadImage(file);
           setFormData((prev) => ({
             ...prev,
             imageUrls: [...prev.imageUrls, url],
