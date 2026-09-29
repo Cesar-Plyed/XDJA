@@ -45,7 +45,7 @@ export const MainLayout: FC = () => {
         <CookieBanner onAccept={() => saveConsent(true)} onDecline={() => saveConsent(false)} t={t} />
       )}
       {legalModal && <LegalModal isOpen onClose={() => setLegalModal(null)} type={legalModal} t={t} />}
-      <Analytics />
+      {cookiesConsent === true && <Analytics />}
     </div>
   );
 };
