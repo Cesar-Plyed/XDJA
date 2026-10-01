@@ -1,4 +1,4 @@
-import { FC, useState, FormEvent } from 'react';
+import { FC, useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '@i18n/useI18n';
 import { Typography } from '@components/atoms/Typography/Typography';
@@ -20,6 +20,14 @@ export const LoginPage: FC<LoginPageProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const supportTriggerRef = useRef<HTMLButtonElement>(null);
+  const supportDialogRef = useRef<HTMLDivElement>(null);
+
+  const closeSupport = () => {
+    setSupportOpen(false);
+    supportTriggerRef.current?.focus();
+  };
 
   const from = (location.state as { from?: Location })?.from?.pathname || '/admin';
 
@@ -45,6 +53,20 @@ export const LoginPage: FC<LoginPageProps> = () => {
       setLoading(false);
     }
   };
+
+  // Keep the support dialog keyboard-friendly while it is open.
+  useEffect(() => {
+    if (!supportOpen) return;
+    supportDialogRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSupportOpen(false);
+        supportTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [supportOpen]);
 
   return (
     <div className="login-page" role="main">
@@ -129,9 +151,15 @@ export const LoginPage: FC<LoginPageProps> = () => {
                   />
                   <span className="login-page__checkbox-label">{t('auth.remember_me')}</span>
                 </label>
-                <a href="#forgot-password" className="login-page__forgot-link">
+                <button
+                  type="button"
+                  ref={supportTriggerRef}
+                  className="login-page__forgot-link"
+                  aria-haspopup="dialog"
+                  onClick={() => setSupportOpen(true)}
+                >
                   {t('auth.forgot_password')}
-                </a>
+                </button>
               </div>
 
               <Button
@@ -162,6 +190,40 @@ export const LoginPage: FC<LoginPageProps> = () => {
           </CardFooter>
         </Card>
       </div>
+
+      {supportOpen && (
+        <div className="login-page__support-overlay" onClick={closeSupport}>
+          <div
+            ref={supportDialogRef}
+            className="login-page__support-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="support-dialog-title"
+            aria-describedby="support-dialog-text"
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="login-page__support-head">
+              <Icon name="unlock" size={32} className="login-page__support-icon" aria-hidden="true" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeSupport}
+                aria-label={t('common.close')}
+                className="login-page__support-close"
+              >
+                <Icon name="x" size={20} />
+              </Button>
+            </div>
+            <Typography variant="h3" weight="semibold" id="support-dialog-title">
+              {t('auth.reset_password_title')}
+            </Typography>
+            <Typography variant="p" color="muted" id="support-dialog-text">
+              {t('auth.reset_password_message')}
+            </Typography>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
