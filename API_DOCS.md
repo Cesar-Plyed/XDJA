@@ -17,6 +17,8 @@ session with `POST /api/auth/logout`. Without Redis the login response omits
 
 In production only the origins listed in the `ALLOWED_ORIGINS` environment variable (comma separated, no spaces, no trailing slash) can call the API from a browser.
 
+Allowed methods: `GET`, `POST`, `DELETE`. Allowed headers: `Content-Type`, `Authorization`. Preflight responses are cached for 86400 s — after the backend changes this list, an existing browser may keep using its cached preflight for up to 24 hours.
+
 ## Rate Limits
 
 Rate limiting requires Upstash Redis. If Redis is not configured it is disabled.
