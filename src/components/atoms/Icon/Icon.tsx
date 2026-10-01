@@ -137,5 +137,7 @@ export const Icon: FC<IconProps> = ({ name, size = 24, className = '', ...props 
     console.warn(`Icon "${name}" not found`);
     return null;
   }
-  return <IconComponent size={size} className={className} {...props} />;
+  // Icons are decorative by default: the surrounding control supplies the
+  // accessible name. Pass aria-hidden={false} to opt out.
+  return <IconComponent size={size} className={className} aria-hidden="true" {...props} />;
 };

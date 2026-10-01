@@ -2,15 +2,19 @@ import type {
   Project,
   PaginatedProjects,
   PaginatedReviews,
+  PaginatedReviewHistory,
+  DeleteReviewResponse,
+  DeleteProjectResponse,
   TranslateReviewResponse,
   CreateReviewRequest,
   CreateReviewResponse,
+  LoginResponse,
   HealthResponse,
   ApiErrorResponse,
 } from '../types/api';
 import { upload } from '@vercel/blob/client';
 
-export type { Project, Review, PaginatedProjects, PaginatedReviews } from '../types/api';
+export type { Project, Review, PaginatedProjects, PaginatedReviews, ReviewHistory, PaginatedReviewHistory } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
@@ -54,6 +58,96 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
+// ---------------------------------------------------------------------------
+// Session storage + silent refresh
+//
+// Access token: 24h JWT. Refresh token: single-use, rotated on every refresh
+// (backend deletes the old one), so concurrent refresh attempts would log the
+// user out — all 401s therefore share ONE in-flight refresh (single-flight).
+// ---------------------------------------------------------------------------
+
+const AUTH_TOKEN_KEY = 'xdja-auth-token';
+const REFRESH_TOKEN_KEY = 'xdja-refresh-token';
+
+type RefreshOutcome =
+  /** New tokens stored — caller may retry the original request. */
+  | 'ok'
+  /** Refresh token invalid/rotated/expired — session is dead, re-login required. */
+  | 'expired'
+  /** Backend or Redis temporarily unavailable — keep tokens, retry later. */
+  | 'transient';
+
+let inflightRefresh: Promise<RefreshOutcome> | null = null;
+
+async function performRefresh(): Promise<RefreshOutcome> {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!refreshToken) return 'expired';
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (response.status === 401) {
+      // Rotated or malformed token: only a re-login can recover.
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      return 'expired';
+    }
+
+    if (!response.ok) {
+      // 503 (Redis down / not configured) or 429 (rate limited): transient.
+      return 'transient';
+    }
+
+    const data = await response.json();
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
+    return 'ok';
+  } catch {
+    // Network failure: transient, keep the session for a later retry.
+    return 'transient';
+  }
+}
+
+function refreshSession(): Promise<RefreshOutcome> {
+  if (!inflightRefresh) {
+    inflightRefresh = performRefresh().finally(() => {
+      inflightRefresh = null;
+    });
+  }
+  return inflightRefresh;
+}
+
+/**
+ * Runs an API call and, if it fails with 401, silently renews the session and
+ * retries once. Callers only ever see the retried result or an ApiError.
+ */
+async function withRefresh<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    const canRefresh = error instanceof ApiError && error.status === 401 && localStorage.getItem(REFRESH_TOKEN_KEY);
+    if (!canRefresh) throw error;
+
+    const outcome = await refreshSession();
+    if (outcome === 'ok') return operation();
+    if (outcome === 'transient') {
+      throw new ApiError('Session renewal temporarily unavailable', 503);
+    }
+    throw new ApiError('Session expired', 401);
+  }
+}
+
+function jsonRequest(path: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: { 'Content-Type': 'application/json', ...init.headers },
+  });
+}
+
 export const api = {
   getAuthToken(): string | null {
     return localStorage.getItem('xdja-auth-token');
@@ -69,18 +163,24 @@ export const api = {
     return handleResponse<HealthResponse>(response);
   },
 
-  async login(email: string, password: string): Promise<{ token: string; expiresIn: string }> {
+  async login(email: string, password: string): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    return handleResponse<{ token: string; expiresIn: string }>(response);
+    return handleResponse<LoginResponse>(response);
   },
 
   async getProjects(page = 1, pageSize = 10): Promise<PaginatedProjects> {
-    const response = await fetch(`${API_BASE_URL}/projects?page=${page}&pageSize=${pageSize}`);
-    return handleResponse<PaginatedProjects>(response);
+    // Wrapped like the authed calls: if this endpoint ever requires auth, the
+    // session renews silently instead of surfacing a raw 401.
+    return withRefresh(async () => {
+      const response = await fetch(`${API_BASE_URL}/projects?page=${page}&pageSize=${pageSize}`, {
+        headers: this.getAuthHeaders(),
+      });
+      return handleResponse<PaginatedProjects>(response);
+    });
   },
 
   async getProject(id: string): Promise<Project> {
@@ -89,12 +189,24 @@ export const api = {
   },
 
   async createProject(data: { title: string; description?: string; imageUrls?: string[] }): Promise<Project> {
-    const response = await fetch(`${API_BASE_URL}/projects`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...this.getAuthHeaders() },
-      body: JSON.stringify(data),
+    return withRefresh(async () => {
+      const response = await jsonRequest('/projects', {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      return handleResponse<Project>(response);
     });
-    return handleResponse<Project>(response);
+  },
+
+  async deleteProject(id: string): Promise<DeleteProjectResponse> {
+    return withRefresh(async () => {
+      const response = await jsonRequest(`/projects/${id}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+      return handleResponse<DeleteProjectResponse>(response);
+    });
   },
 
   async uploadImage(file: File): Promise<string> {
@@ -120,8 +232,12 @@ export const api = {
     if (projectId) {
       params.set('projectId', projectId);
     }
-    const response = await fetch(`${API_BASE_URL}/reviews?${params}`);
-    return handleResponse<PaginatedReviews>(response);
+    return withRefresh(async () => {
+      const response = await fetch(`${API_BASE_URL}/reviews?${params}`, {
+        headers: this.getAuthHeaders(),
+      });
+      return handleResponse<PaginatedReviews>(response);
+    });
   },
 
   async translateReview(reviewId: string, lang: 'es' | 'en'): Promise<TranslateReviewResponse> {
@@ -136,5 +252,48 @@ export const api = {
       body: JSON.stringify(data),
     });
     return handleResponse<CreateReviewResponse>(response);
+  },
+
+  async deleteReview(id: string): Promise<DeleteReviewResponse> {
+    return withRefresh(async () => {
+      const response = await jsonRequest(`/reviews/${id}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+      return handleResponse<DeleteReviewResponse>(response);
+    });
+  },
+
+  async getReviewHistory(page = 1, pageSize = 10): Promise<PaginatedReviewHistory> {
+    return withRefresh(async () => {
+      const response = await jsonRequest(`/reviews/history?page=${page}&pageSize=${pageSize}`, {
+        headers: this.getAuthHeaders(),
+      });
+      return handleResponse<PaginatedReviewHistory>(response);
+    });
+  },
+
+  /**
+   * Revokes the refresh token server-side (idempotent, never throws) and
+   * clears both local tokens. Safe to call with an expired access token.
+   */
+  async logout(): Promise<void> {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    try {
+      await jsonRequest('/auth/logout', {
+        method: 'POST',
+        body: JSON.stringify(refreshToken ? { refreshToken } : {}),
+      });
+    } catch {
+      // Best effort — local session is cleared regardless.
+    }
+    this.clearSession();
+  },
+
+  /** Drops every locally stored session key (auth, refresh, user). */
+  clearSession(): void {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem('xdja-user');
   },
 };

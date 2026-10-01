@@ -41,6 +41,36 @@ export interface PaginatedReviews {
   pageSize: number;
 }
 
+/** Snapshot of a deleted review; kept server-side for 30 days (see backend API_DOCS). */
+export interface ReviewHistory {
+  id: string;
+  reviewId: string;
+  projectId: string | null;
+  rating: number;
+  description: string;
+  alias: string | null;
+  language: SupportedLanguage;
+  createdAt: string;
+  deletedAt: string;
+}
+
+export interface PaginatedReviewHistory {
+  items: ReviewHistory[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface DeleteReviewResponse {
+  deleted: true;
+  history: ReviewHistory;
+}
+
+export interface DeleteProjectResponse {
+  deleted: true;
+  deletedReviews: number;
+}
+
 export interface TranslateReviewResponse {
   translatedText: string;
   originalLanguage: SupportedLanguage;
@@ -63,6 +93,19 @@ export interface CreateReviewResponse {
   alias: string | null;
   language: SupportedLanguage;
   createdAt: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  expiresIn: string;
+  /** Present only when the backend has Upstash Redis configured. */
+  refreshToken?: string;
+}
+
+export interface RefreshSessionResponse {
+  token: string;
+  expiresIn: string;
+  refreshToken: string;
 }
 
 export interface ApiErrorResponse {

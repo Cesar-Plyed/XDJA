@@ -5,7 +5,13 @@ Base URL: `https://your-backend.vercel.app/api`
 ## Authentication
 
 Admin endpoints require the header `Authorization: Bearer <JWT>`.
-Get a token with `POST /api/auth/login`. Tokens expire after 24 hours.
+Get a token with `POST /api/auth/login`. Access tokens expire after 24 hours.
+
+When Upstash Redis is configured, login also returns a `refreshToken` (single-use,
+rotated on every refresh, 30-day TTL). The frontend client renews the access token
+silently via `POST /api/auth/refresh` when a request returns `401`, and revokes the
+session with `POST /api/auth/logout`. Without Redis the login response omits
+`refreshToken`, refresh returns `503`, and sessions last the full 24 hours.
 
 ## CORS
 
@@ -20,6 +26,7 @@ Rate limiting requires Upstash Redis. If Redis is not configured it is disabled.
 | General | 100 requests | 15 min |
 | Reviews (create) | 5 requests | 1 hour |
 | Login | 5 requests | 15 min |
+| Refresh | 30 requests | 15 min |
 
 Response headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`.
 
@@ -46,9 +53,31 @@ Content-Type: application/json
 ```
 Response (200):
 ```json
-{ "token": "eyJhbGciOiJIUzI1NiIs...", "expiresIn": "24h" }
+{ "token": "eyJhbGciOiJIUzI1NiIs...", "expiresIn": "24h", "refreshToken": "optional-with-redis" }
 ```
-Errors: `400` (`Invalid credentials` or `Admin authentication not configured`), `429`.
+`refreshToken` is present only when Redis is configured. Errors: `400` (`Invalid credentials` or `Admin authentication not configured`), `429`. Login revokes all previously issued refresh tokens (single admin session).
+
+#### Refresh Session
+```
+POST /api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "the-single-use-rotate-token" }
+```
+Response (200):
+```json
+{ "token": "new-access-token", "expiresIn": "24h", "refreshToken": "next-rotate-token" }
+```
+The refresh token is deleted and reissued on every call — concurrent refreshes with the same token fail. Errors: `401` (invalid/expired/already-used token — re-login required), `429` (30 requests / 15 min), `503` (Redis not configured or unreachable — retryable, the client keeps its tokens).
+
+#### Logout
+```
+POST /api/auth/logout
+Content-Type: application/json
+
+{ "refreshToken": "the-refresh-token-to-revoke" }
+```
+Response (200). Idempotent: unknown or missing tokens succeed, the local session is cleared regardless. The access token stays valid until it expires; only the refresh token is revoked.
 
 ---
 
@@ -90,6 +119,17 @@ Authorization: Bearer <token>
 Content-Type: application/json
 ```
 Used by the Vercel Blob client SDK (see "Image Upload" below). The body is the SDK's `HandleUploadBody`; you normally do not call this endpoint manually. Returns `503` if `BLOB_READ_WRITE_TOKEN` is not configured.
+
+#### Delete Project (Admin)
+```
+DELETE /api/projects/:id
+Authorization: Bearer <token>
+```
+Response (200):
+```json
+{ "deleted": true, "deletedReviews": 3 }
+```
+All of the project's reviews are moved to review history (see `GET /api/reviews/history`). Errors: `401`, `404`.
 
 ---
 
@@ -142,6 +182,26 @@ Response (200):
 - Returns the original text if it is already in the target language.
 - Cached for 30 days.
 - Sends the review text to the DeepL API. Requires `DEEPL_API_KEY`.
+
+#### Delete Review (Admin)
+```
+DELETE /api/reviews/:id
+Authorization: Bearer <token>
+```
+Response (200):
+```json
+{ "deleted": true, "history": { "...": "ReviewHistory snapshot" } }
+```
+The review disappears from the public lists and a snapshot is kept in review history for 30 days (purged by the backend cron). Errors: `401`, `404`.
+
+#### List Review History (Admin)
+```
+GET /api/reviews/history?page=1&pageSize=10
+Authorization: Bearer <token>
+```
+Response (200): paginated `ReviewHistory` items, newest deletions first. Errors: `401`.
+
+> Note: the route is declared before `DELETE /api/reviews/:id`, so `history` never collides with the delete handler.
 
 ---
 
@@ -242,5 +302,21 @@ const result = await handleUpload({
   alias: string | null;  // sanitized, max 60
   language: "es" | "en";
   createdAt: string;
+}
+```
+
+### ReviewHistory
+Snapshot of a deleted review, kept server-side for 30 days.
+```typescript
+{
+  id: string;            // UUID of the history row
+  reviewId: string;      // id of the original review
+  projectId: string | null;
+  rating: number;
+  description: string;
+  alias: string | null;
+  language: "es" | "en";
+  createdAt: string;     // when the review was written
+  deletedAt: string;     // when it was deleted
 }
 ```

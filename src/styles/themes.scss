@@ -1,5 +1,6 @@
 // Light theme (default) - Pastel colors, not extremely bright
 :root {
+  color-scheme: light;
   --color-bg: #fefdf8;
   --color-bg-rgb: 254, 253, 248;
   --color-bg-secondary: #f5f3ed;
@@ -32,6 +33,7 @@
 // Dark theme - Elegant like daily.dev
 html[data-theme='dark'],
 html.dark {
+  color-scheme: dark;
   --color-bg: #0d1117;
   --color-bg-rgb: 13, 17, 23;
   --color-bg-secondary: #161b22;

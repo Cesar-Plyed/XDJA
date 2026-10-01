@@ -1,38 +1,72 @@
-import { FC, useState, useEffect, FormEvent, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { FC, useState, useEffect, useRef, FormEvent, ChangeEvent } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Project } from '@types_cm/api';
 import { Spinner } from '@components/atoms/Spinner/Spinner';
 import { Button } from '@components/atoms/Button/Button';
-import { api } from '@lib/api';
+import { api, ApiError } from '@lib/api';
 import { Typography } from '@components/atoms/Typography/Typography';
 import { Card, CardBody, CardHeader } from '@components/molecules/Card/Card';
 import { FormField } from '@components/molecules/FormField/FormField';
 import { useI18n } from '@i18n/useI18n';
 import { Icon, IconName } from '@components/atoms/Icon/Icon';
+import { Rating } from '@components/molecules/Rating/Rating';
+import { useAdminReviews, useReviewHistory } from '@hooks/useApi';
 
 type AdminDashboardPageProps = Record<string, never>;
 
 const MAX_IMAGES = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const PAGE_SIZE = 10;
+
+const TAB_IDS = ['overview', 'projects', 'reviews', 'settings'] as const;
+type AdminTab = (typeof TAB_IDS)[number];
+
+type PendingDelete = {
+  kind: 'review' | 'project';
+  id: string;
+  title: string;
+};
+
+type Feedback = {
+  tone: 'success' | 'error';
+  text: string;
+};
 
 export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'reviews' | 'settings'>('overview');
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const confirmRef = useRef<HTMLDivElement>(null);
+
+  const reviews = useAdminReviews(reviewsPage, PAGE_SIZE);
+  const history = useReviewHistory(historyPage, PAGE_SIZE);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     imageUrls: [] as string[],
   });
+
+  // Tab state lives in the URL (?tab=reviews) so it is deep-linkable.
+  const tabParam = searchParams.get('tab');
+  const activeTab: AdminTab = (TAB_IDS as readonly string[]).includes(tabParam ?? '')
+    ? (tabParam as AdminTab)
+    : 'overview';
+  const setActiveTab = (id: AdminTab) => setSearchParams({ tab: id });
 
   useEffect(() => {
     const token = localStorage.getItem('xdja-auth-token');
@@ -42,6 +76,47 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
     }
     fetchProjects();
   }, [navigate]);
+
+  // Refresh already failed fatally (or no refresh token exists): the admin
+  // session is gone — drop the stale keys and return to the login screen.
+  useEffect(() => {
+    if (history.error instanceof ApiError && history.error.status === 401) {
+      api.clearSession();
+      navigate('/login');
+    }
+  }, [history.error, navigate]);
+
+  // Keep the confirm dialog keyboard-friendly while it is open.
+  useEffect(() => {
+    if (!pendingDelete) return;
+    confirmRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPendingDelete(null);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [pendingDelete]);
+
+  const formatDate = (iso: string) =>
+    new Intl.DateTimeFormat(locale === 'es' ? 'es' : 'en', { dateStyle: 'medium' }).format(new Date(iso));
+
+  const totalPages = (total: number) => Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const projectTitle = (projectId: string | null) => {
+    if (!projectId) return t('admin.no_project');
+    return projects.find((p) => p.id === projectId)?.title ?? t('admin.no_project');
+  };
+
+  /** Maps API errors to translated, actionable copy; flags dead sessions. */
+  const describeError = (err: unknown, fallbackKey: string) => {
+    if (err instanceof ApiError) {
+      if (err.status === 401) return { sessionExpired: true, message: t('admin.session_expired') };
+      if (err.status === 404) return { sessionExpired: false, message: t('admin.not_found') };
+      if (err.status === 429) return { sessionExpired: false, message: t('admin.too_many_requests') };
+      if (err.status >= 500) return { sessionExpired: false, message: t('admin.server_unavailable') };
+    }
+    return { sessionExpired: false, message: t(fallbackKey) };
+  };
 
   const fetchProjects = async () => {
     try {
@@ -61,9 +136,8 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
     fetchProjects();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('xdja-auth-token');
-    localStorage.removeItem('xdja-user');
+  const handleLogout = async () => {
+    await api.logout();
     navigate('/login');
   };
 
@@ -132,17 +206,61 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
       fetchProjects();
     } catch (err) {
       console.error('Failed to create project:', err);
+      const info = describeError(err, 'admin.save_failed');
+      setFeedback({ tone: 'error', text: info.message });
+      if (info.sessionExpired) {
+        api.clearSession();
+        navigate('/login');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    if (!window.confirm(t('admin.confirm_delete'))) return;
+  const openDeleteConfirm = (kind: PendingDelete['kind'], id: string, title: string) => {
+    setFeedback(null);
+    setPendingDelete({ kind, id, title });
+  };
+
+  const handleDeleteProject = (project: Project) => {
+    openDeleteConfirm('project', project.id, project.title);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+
     try {
-      setProjects((prev) => prev.filter((p) => p.id !== projectId));
+      if (pendingDelete.kind === 'review') {
+        await api.deleteReview(pendingDelete.id);
+        setFeedback({ tone: 'success', text: t('admin.review_deleted') });
+        // Avoid an empty page when the last item of a page is removed.
+        if (reviews.data && reviews.data.items.length === 1 && reviewsPage > 1) {
+          setReviewsPage(reviewsPage - 1);
+        } else {
+          reviews.refetch();
+        }
+        history.refetch();
+      } else {
+        await api.deleteProject(pendingDelete.id);
+        setFeedback({ tone: 'success', text: t('admin.project_deleted') });
+        // Deleting a project moves its reviews to history too.
+        fetchProjects();
+        reviews.refetch();
+        history.refetch();
+      }
+      setPendingDelete(null);
     } catch (err) {
-      console.error('Failed to delete project:', err);
+      const info = describeError(err, 'admin.delete_failed');
+      setPendingDelete(null);
+      if (info.sessionExpired) {
+        api.clearSession();
+        navigate('/login');
+        return;
+      }
+      setFeedback({ tone: 'error', text: info.message });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -172,12 +290,15 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
     );
   }
 
-  const adminTabs: { id: typeof activeTab; label: string; icon: IconName }[] = [
+  const adminTabs: { id: AdminTab; label: string; icon: IconName }[] = [
     { id: 'overview', label: t('admin.overview'), icon: 'layoutDashboard' },
     { id: 'projects', label: t('admin.projects'), icon: 'images' },
     { id: 'reviews', label: t('admin.reviews'), icon: 'star' },
     { id: 'settings', label: t('admin.settings'), icon: 'settings' },
   ];
+
+  const reviewsTotalPages = reviews.data ? totalPages(reviews.data.total) : 1;
+  const historyTotalPages = history.data ? totalPages(history.data.total) : 1;
 
   return (
     <div className="admin-page">
@@ -215,6 +336,27 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
       </nav>
 
       <div className="admin-page__content">
+        {feedback && (
+          <div
+            className={`admin-page__feedback admin-page__feedback--${feedback.tone}`}
+            role="status"
+            aria-live="polite"
+          >
+            <Icon name={feedback.tone === 'success' ? 'check' : 'shield'} size={18} aria-hidden="true" />
+            <Typography variant="small" className="admin-page__feedback-text">
+              {feedback.text}
+            </Typography>
+            <button
+              type="button"
+              className="admin-page__feedback-close"
+              onClick={() => setFeedback(null)}
+              aria-label={t('admin.dismiss_message')}
+            >
+              <Icon name="x" size={14} aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
         {activeTab === 'overview' && (
           <div role="tabpanel" id="overview-panel" aria-labelledby="overview-tab">
             <div className="admin-page__stats">
@@ -239,7 +381,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                     <Icon name="star" size={32} className="admin-page__stat-icon" />
                     <div className="admin-page__stat-info">
                       <Typography variant="h2" weight="bold" className="admin-page__stat-value">
-                        0
+                        {reviews.data ? reviews.data.total : '—'}
                       </Typography>
                       <Typography variant="small" color="muted" className="admin-page__stat-label">
                         {t('admin.total_reviews')}
@@ -251,13 +393,13 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
               <Card variant="outlined" padding="lg" className="admin-page__stat-card">
                 <CardBody>
                   <div className="admin-page__stat">
-                    <Icon name="messageSquare" size={32} className="admin-page__stat-icon" />
+                    <Icon name="trash2" size={32} className="admin-page__stat-icon" />
                     <div className="admin-page__stat-info">
                       <Typography variant="h2" weight="bold" className="admin-page__stat-value">
-                        0
+                        {history.data ? history.data.total : '—'}
                       </Typography>
                       <Typography variant="small" color="muted" className="admin-page__stat-label">
-                        {t('admin.pending_reviews')}
+                        {t('admin.recently_deleted')}
                       </Typography>
                     </div>
                   </div>
@@ -281,7 +423,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                         <div className="admin-page__project-info">
                           <Typography variant="p" weight="medium">{project.title}</Typography>
                           <Typography variant="small" color="muted">
-                            {new Date(project.createdAt).toLocaleDateString()}
+                            {formatDate(project.createdAt)}
                           </Typography>
                         </div>
                         <div className="admin-page__project-actions">
@@ -296,7 +438,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteProject(project.id)}
+                            onClick={() => handleDeleteProject(project)}
                             leftIcon={<Icon name="trash2" size={16} />}
                             className="admin-page__delete-btn"
                           >
@@ -364,6 +506,8 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                                 <img
                                   src={project.images[0].url}
                                   alt={project.title}
+                                  width={64}
+                                  height={44}
                                   className="admin-page__project-thumb"
                                   loading="lazy"
                                 />
@@ -383,7 +527,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                             </td>
                             <td>
                               <Typography variant="small" color="muted">
-                                {new Date(project.createdAt).toLocaleDateString()}
+                                {formatDate(project.createdAt)}
                               </Typography>
                             </td>
                             <td>
@@ -406,7 +550,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleDeleteProject(project.id)}
+                                  onClick={() => handleDeleteProject(project)}
                                   leftIcon={<Icon name="trash2" size={16} />}
                                   className="admin-page__delete-btn"
                                   aria-label={t('admin.delete_project') + ' ' + project.title}
@@ -426,14 +570,208 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
 
         {activeTab === 'reviews' && (
           <div role="tabpanel" id="reviews-panel" aria-labelledby="reviews-tab">
-            <Typography variant="h2" weight="bold" className="admin-page__section-title">
-              {t('admin.manage_reviews')}
-            </Typography>
+            <div className="admin-page__toolbar">
+              <Typography variant="h2" weight="bold">{t('admin.manage_reviews')}</Typography>
+              <Button
+                variant="ghost"
+                onClick={() => { reviews.refetch(); history.refetch(); }}
+                leftIcon={<Icon name="loader2" size={18} />}
+              >
+                {t('admin.refresh')}
+              </Button>
+            </div>
+
+            <Card variant="outlined" padding="none" className="admin-page__table-card">
+              <CardBody className="admin-page__table-body">
+                {reviews.loading && !reviews.data ? (
+                  <div className="admin-page__table-loading">
+                    <Spinner size="sm" />
+                  </div>
+                ) : reviews.error ? (
+                  <div className="admin-page__empty-state">
+                    <Icon name="shield" size={48} className="admin-page__empty-icon" />
+                    <Typography variant="p" color="muted">
+                      {describeError(reviews.error, 'admin.reviews_load_error').message}
+                    </Typography>
+                    <Button variant="primary" onClick={reviews.refetch} leftIcon={<Icon name="loader2" size={16} />}>
+                      {t('admin.retry')}
+                    </Button>
+                  </div>
+                ) : !reviews.data || reviews.data.items.length === 0 ? (
+                  <div className="admin-page__empty-state">
+                    <Icon name="star" size={64} className="admin-page__empty-icon" />
+                    <Typography variant="h3" weight="semibold" className="admin-page__empty-title">
+                      {t('admin.no_reviews')}
+                    </Typography>
+                    <Typography variant="p" color="muted" className="admin-page__empty-text">
+                      {t('admin.no_reviews_text')}
+                    </Typography>
+                  </div>
+                ) : (
+                  <>
+                    <div className="admin-page__table-wrapper">
+                      <table className="admin-page__table" role="grid">
+                        <thead>
+                          <tr>
+                            <th scope="col">{t('admin.rating')}</th>
+                            <th scope="col">{t('admin.review_text')}</th>
+                            <th scope="col">{t('admin.author')}</th>
+                            <th scope="col">{t('admin.project_title')}</th>
+                            <th scope="col">{t('admin.date')}</th>
+                            <th scope="col">{t('admin.actions')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {reviews.data.items.map((review) => (
+                            <tr key={review.id}>
+                              <td>
+                                <Rating
+                                  value={review.rating}
+                                  size="sm"
+                                  ariaLabel={t('admin.rating_aria', { value: review.rating })}
+                                />
+                              </td>
+                              <td>
+                                <Typography variant="small" color="muted" className="admin-page__description-cell">
+                                  {review.description}
+                                </Typography>
+                              </td>
+                              <td>
+                                <Typography variant="small" weight="medium">
+                                  {review.alias ?? t('admin.anonymous')}
+                                </Typography>
+                              </td>
+                              <td>
+                                <Typography variant="small" color="muted">
+                                  {projectTitle(review.projectId)}
+                                </Typography>
+                              </td>
+                              <td>
+                                <Typography variant="small" color="muted">
+                                  {formatDate(review.createdAt)}
+                                </Typography>
+                              </td>
+                              <td>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openDeleteConfirm('review', review.id, review.description)}
+                                  leftIcon={<Icon name="trash2" size={16} />}
+                                  className="admin-page__delete-btn"
+                                  aria-label={t('admin.delete_review')}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {reviews.data.total > PAGE_SIZE && (
+                      <div className="admin-page__pagination">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={reviewsPage <= 1}
+                          onClick={() => setReviewsPage((p) => p - 1)}
+                          leftIcon={<Icon name="chevronLeft" size={16} />}
+                        >
+                          {t('admin.prev_page')}
+                        </Button>
+                        <Typography variant="small" color="muted">
+                          {t('admin.page_of', { current: reviewsPage, total: reviewsTotalPages })}
+                        </Typography>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={reviewsPage >= reviewsTotalPages}
+                          onClick={() => setReviewsPage((p) => p + 1)}
+                          rightIcon={<Icon name="chevronRight" size={16} />}
+                        >
+                          {t('admin.next_page')}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardBody>
+            </Card>
+
             <Card variant="outlined" padding="lg">
+              <CardHeader>
+                <div className="admin-page__history-header">
+                  <Typography variant="h3" weight="semibold">{t('admin.deleted_section_title')}</Typography>
+                  <Typography variant="small" color="muted">{t('admin.deleted_retention_note')}</Typography>
+                </div>
+              </CardHeader>
               <CardBody>
-                <Typography variant="p" color="muted">
-                  {t('admin.reviews_coming_soon')}
-                </Typography>
+                {history.loading && !history.data ? (
+                  <div className="admin-page__table-loading">
+                    <Spinner size="sm" />
+                  </div>
+                ) : history.error ? (
+                  <div className="admin-page__empty">
+                    <Typography variant="p" color="muted">
+                      {describeError(history.error, 'admin.reviews_load_error').message}
+                    </Typography>
+                    <Button variant="ghost" size="sm" onClick={history.refetch} leftIcon={<Icon name="loader2" size={16} />}>
+                      {t('admin.retry')}
+                    </Button>
+                  </div>
+                ) : !history.data || history.data.items.length === 0 ? (
+                  <Typography variant="p" color="muted" className="admin-page__empty">
+                    {t('admin.no_deleted_reviews')}
+                  </Typography>
+                ) : (
+                  <>
+                    <div className="admin-page__project-list">
+                      {history.data.items.map((item) => (
+                        <div key={item.id} className="admin-page__project-item">
+                          <div className="admin-page__project-info">
+                            <Typography variant="p" weight="medium" className="admin-page__description-cell">
+                              {item.description}
+                            </Typography>
+                            <Typography variant="small" weight="medium">
+                              {item.alias ?? t('admin.anonymous')}
+                            </Typography>
+                            <Typography variant="small" color="muted">
+                              {t('admin.deleted_on', { date: formatDate(item.deletedAt) })}
+                            </Typography>
+                          </div>
+                          <Rating
+                            value={item.rating}
+                            size="sm"
+                            ariaLabel={t('admin.rating_aria', { value: item.rating })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {history.data.total > PAGE_SIZE && (
+                      <div className="admin-page__pagination">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={historyPage <= 1}
+                          onClick={() => setHistoryPage((p) => p - 1)}
+                          leftIcon={<Icon name="chevronLeft" size={16} />}
+                        >
+                          {t('admin.prev_page')}
+                        </Button>
+                        <Typography variant="small" color="muted">
+                          {t('admin.page_of', { current: historyPage, total: historyTotalPages })}
+                        </Typography>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={historyPage >= historyTotalPages}
+                          onClick={() => setHistoryPage((p) => p + 1)}
+                          rightIcon={<Icon name="chevronRight" size={16} />}
+                        >
+                          {t('admin.next_page')}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
               </CardBody>
             </Card>
           </div>
@@ -454,6 +792,48 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
           </div>
         )}
       </div>
+
+      {pendingDelete && (
+        <div className="admin-page__modal-overlay" onClick={() => setPendingDelete(null)}>
+          <div
+            ref={confirmRef}
+            className="admin-page__modal admin-page__confirm"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="confirm-delete-title"
+            aria-describedby="confirm-delete-text"
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="admin-page__confirm-body">
+              <Icon name="shield" size={32} className="admin-page__confirm-icon" aria-hidden="true" />
+              <Typography variant="h3" weight="semibold" id="confirm-delete-title">
+                {t('admin.confirm_delete_title')}
+              </Typography>
+              <Typography variant="p" color="muted" id="confirm-delete-text">
+                {pendingDelete.kind === 'review' ? t('admin.confirm_delete_review') : t('admin.confirm_delete')}
+              </Typography>
+              <Typography variant="small" weight="medium" className="admin-page__confirm-item">
+                {pendingDelete.title}
+              </Typography>
+            </div>
+            <div className="admin-page__form-actions">
+              <Button variant="ghost" onClick={() => setPendingDelete(null)} disabled={deleting}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="admin-page__delete-btn"
+                onClick={confirmDelete}
+                isLoading={deleting}
+                leftIcon={<Icon name="trash2" size={16} />}
+              >
+                {t('admin.delete')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {(showCreateProject || editingProject) && (
         <div className="admin-page__modal-overlay" onClick={resetForm}>
@@ -525,7 +905,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
                     <div className="admin-page__image-preview">
                       {formData.imageUrls.map((url, idx) => (
                         <div key={idx} className="admin-page__image-thumb">
-                          <img src={url} alt={`Preview ${idx + 1}`} className="admin-page__image-preview-img" loading="lazy" />
+                          <img src={url} alt={`Preview ${idx + 1}`} width={80} height={64} className="admin-page__image-preview-img" loading="lazy" />
                           <button
                             type="button"
                             className="admin-page__image-remove"

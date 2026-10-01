@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
-import type { Project, PaginatedProjects, PaginatedReviews, TranslateReviewResponse } from '../types/api';
+import type { Project, PaginatedProjects, PaginatedReviews, PaginatedReviewHistory, TranslateReviewResponse } from '../types/api';
 
 interface UseApiState<T> {
   data: T | null;
@@ -86,6 +86,62 @@ export function useReviewsByProject(projectId: string | null, page = 1, pageSize
   }, [fetchReviews]);
 
   return { ...state, refetch: fetchReviews };
+}
+
+/** Admin: paginated review list (public endpoint, used for moderation UI + totals). */
+export function useAdminReviews(page = 1, pageSize = 10) {
+  const [state, setState] = useState<UseApiState<PaginatedReviews>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const fetchReviews = useCallback(async () => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      const data = await api.getReviews({ page, pageSize });
+      setState({ data, loading: false, error: null });
+    } catch (error) {
+      setState({ data: null, loading: false, error: error as Error });
+    }
+  }, [page, pageSize]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  return { ...state, refetch: fetchReviews };
+}
+
+/** Admin: deleted reviews kept for 30 days (requires auth). */
+export function useReviewHistory(page = 1, pageSize = 10) {
+  const [state, setState] = useState<UseApiState<PaginatedReviewHistory>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const fetchHistory = useCallback(async () => {
+    // No session → the endpoint answers 401; resolve quietly instead of
+    // firing a request the redirecting page will never show.
+    if (!api.getAuthToken()) {
+      setState({ data: null, loading: false, error: null });
+      return;
+    }
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      const data = await api.getReviewHistory(page, pageSize);
+      setState({ data, loading: false, error: null });
+    } catch (error) {
+      setState({ data: null, loading: false, error: error as Error });
+    }
+  }, [page, pageSize]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  return { ...state, refetch: fetchHistory };
 }
 
 export function useTranslateReview() {

@@ -377,20 +377,35 @@ All backend communication goes through the typed client in `src/lib/api.ts`. It 
 | Method   | Endpoint                          | Purpose                                  | Auth |
 | -------- | --------------------------------- | ---------------------------------------- | ---- |
 | `GET`    | `/api/health`                     | Health check                             | No   |
-| `POST`   | `/api/auth/login`                 | Admin login, returns a bearer token       | No   |
+| `POST`   | `/api/auth/login`                 | Admin login, returns a bearer token (+ `refreshToken` when Redis is on) | No   |
+| `POST`   | `/api/auth/refresh`               | Silent session renewal (single-use token rotation) | No*  |
+| `POST`   | `/api/auth/logout`                | Revoke the refresh token                 | No*  |
 | `GET`    | `/api/projects`                   | Paginated projects                       | No   |
 | `GET`    | `/api/projects/:id`               | Single project                           | No   |
 | `POST`   | `/api/projects`                   | Create a project                         | Yes  |
+| `DELETE` | `/api/projects/:id`               | Delete a project (its reviews move to history) | Yes  |
 | `GET`    | `/api/projects/upload-token`      | Request a direct upload token            | Yes  |
 | `POST`   | `/api/projects/upload`            | Base64 image upload fallback             | Yes  |
 | `GET`    | `/api/reviews`                    | Paginated reviews, optional project filter | No |
 | `GET`    | `/api/reviews/project/:projectId` | Reviews for a single project             | No   |
 | `GET`    | `/api/reviews/:id/translate`      | Translate a review to `es` or `en`       | No   |
 | `POST`   | `/api/reviews`                    | Submit a review (Turnstile-protected)    | No   |
+| `DELETE` | `/api/reviews/:id`                | Delete a review (snapshot kept 30 days)  | Yes  |
+| `GET`    | `/api/reviews/history`            | Deleted-review history, paginated        | Yes  |
+
+`*` carries the refresh token in the body instead of a bearer header.
 
 ### Authentication
 
-The admin session token is stored in `localStorage` under `xdja-auth-token` and attached as a `Authorization: Bearer <token>` header by `api.getAuthHeaders()`. Only requests to privileged endpoints include it.
+The admin session uses two keys in `localStorage`: `xdja-auth-token` (24 h access JWT) and `xdja-refresh-token` (single-use rotation token, present only when the backend has Upstash Redis configured). `api.getAuthHeaders()` attaches the bearer header.
+
+When an authenticated request returns `401`, `src/lib/api.ts` renews the session **silently**: all concurrent `401`s share a single in-flight `POST /auth/refresh` (the refresh token is single-use, so parallel refreshes would log the admin out), then the original request is retried once. Outcomes:
+
+- refresh `200` → both tokens rotated in place, retry continues;
+- refresh `401` → tokens cleared, the UI redirects to `/login`;
+- refresh `503`/`429`/network → tokens kept, a retryable error message is shown (no logout).
+
+`api.logout()` revokes the refresh token server-side (best effort) and clears both keys.
 
 ### Uploads
 

@@ -31,6 +31,12 @@ export const LoginPage: FC<LoginPageProps> = () => {
     try {
       const response = await api.login(email, password);
       localStorage.setItem('xdja-auth-token', response.token);
+      if (response.refreshToken) {
+        localStorage.setItem('xdja-refresh-token', response.refreshToken);
+      } else {
+        // No Redis on the backend: drop any stale token from a previous session.
+        localStorage.removeItem('xdja-refresh-token');
+      }
       localStorage.setItem('xdja-user', JSON.stringify({ email, role: 'admin' }));
       navigate(from, { replace: true });
     } catch {
