@@ -33,3 +33,5 @@ dist-ssr
 .opencode/
 .vercel
 .env*
+
+MEMORY.md
