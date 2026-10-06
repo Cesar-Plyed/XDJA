@@ -29,7 +29,7 @@ const prerenderPlugin: Plugin = vitePrerender({
   }),
 });
 
-// Prerendering needs a launchable Chromium. Where the required system
+// Prerendering needs a launchable Chromium. If the required system
 // libraries can't be installed, degrade to client-side rendering with a
 // warning instead of failing the whole build (Google still executes JS).
 const prerenderTolerant: Plugin = {
@@ -81,8 +81,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
-          motion: ["motion"],
-          analytics: ["@vercel/analytics"],
         },
         chunkFileNames: "assets/js/[name]-[hash].js",
         entryFileNames: "assets/js/[name]-[hash].js",
