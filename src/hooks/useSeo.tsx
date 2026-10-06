@@ -14,7 +14,7 @@ export function useSeo({ title, description, noindex = false, ogImage }: SeoOpti
   const { locale } = useI18n();
   const location = useLocation();
   const canonical = `${SITE_URL}${location.pathname}`;
-  const image = ogImage ?? `${SITE_URL}/og-image.jpg`;
+  const image = ogImage ?? `${SITE_URL}/og-image.svg`;
   const robots = noindex ? 'noindex, nofollow' : 'index, follow';
   const ogLocale = locale === 'es' ? 'es_MX' : 'en_US';
 

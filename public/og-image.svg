@@ -1,0 +1,91 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e94560;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle pattern overlay -->
+  <g opacity="0.03">
+    <rect x="0" y="0" width="1200" height="630" fill="url(#pattern)"/>
+  </g>
+  <defs>
+    <pattern id="pattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 60 M -20 20 L 20 -20 M 40 80 L 80 40" stroke="#ffffff" stroke-width="1" fill="none"/>
+    </pattern>
+  </defs>
+  
+  <!-- Left decorative element -->
+  <g transform="translate(100, 150)">
+    <circle cx="0" cy="0" r="120" fill="url(#accentGrad)" opacity="0.15" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="80" fill="none" stroke="url(#accentGrad)" stroke-width="2" opacity="0.3"/>
+    <circle cx="0" cy="0" r="40" fill="none" stroke="url(#accentGrad)" stroke-width="1" opacity="0.2"/>
+  </g>
+  
+  <!-- Right decorative element -->
+  <g transform="translate(1100, 480)">
+    <circle cx="0" cy="0" r="100" fill="url(#accentGrad)" opacity="0.1" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="60" fill="none" stroke="url(#accentGrad)" stroke-width="1.5" opacity="0.25"/>
+  </g>
+  
+  <!-- Main content -->
+  <g transform="translate(600, 315)">
+    <!-- Logo/Icon -->
+    <g transform="translate(0, -80)">
+      <!-- Building icon -->
+      <g fill="none" stroke="url(#accentGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M-40 20 L-40 -40 L40 -40 L40 20" stroke-width="6"/>
+        <line x1="-40" y1="-10" x2="40" y2="-10" stroke-width="3"/>
+        <line x1="-15" y1="20" x2="-15" y2="-10" stroke-width="2"/>
+        <line x1="15" y1="20" x2="15" y2="-10" stroke-width="2"/>
+        <circle cx="0" cy="-25" r="8" fill="url(#accentGrad)"/>
+      </g>
+    </g>
+    
+    <!-- Company name -->
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="48" font-weight="700" fill="#ffffff" letter-spacing="2">
+      XDJA Construction
+    </text>
+    
+    <!-- Tagline -->
+    <text x="0" y="80" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="400" fill="#b8b8d0" letter-spacing="0.5">
+      Premium Construction & Renovation Services
+    </text>
+    
+    <!-- Services tags -->
+    <g transform="translate(0, 130)">
+      <rect x="-180" y="-18" width="360" height="36" rx="18" fill="rgba(233, 69, 96, 0.15)" stroke="url(#accentGrad)" stroke-width="1.5"/>
+      <text x="0" y="6" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="500" fill="#ff6b6b">
+        Stamped Concrete • Structural Repair • Complete Renovation • Premium Finishes
+      </text>
+    </g>
+    
+    <!-- Contact -->
+    <g transform="translate(0, 200)">
+      <text x="0" y="0" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="500" fill="#ffffff">
+        📞 +1 (574) 304-6758
+      </text>
+      <text x="0" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#8888a0">
+        xdjaconstructionllc@gmail.com
+      </text>
+    </g>
+  </g>
+  
+  <!-- Bottom accent bar -->
+  <rect x="0" y="580" width="1200" height="50" fill="url(#accentGrad)" opacity="0.3"/>
+</svg>

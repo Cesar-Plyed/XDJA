@@ -22,8 +22,9 @@ const prerenderPlugin: Plugin = vitePrerender({
     // Wait for the app shell so the capture happens after React mounts...
     renderAfterElementExists: ".app-shell",
     // ...then give react-helmet-async's effects time to flush the
-    // per-page head tags before the HTML is captured.
-    renderAfterTime: 1500,
+    // per-page head tags before the HTML is captured. Increased from 1500ms
+    // because the first route (home) was losing helmet tags.
+    renderAfterTime: 3000,
     // Required to launch Chromium inside containers (Vercel build image).
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   }),
