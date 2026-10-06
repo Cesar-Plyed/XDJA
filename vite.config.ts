@@ -31,27 +31,32 @@ const prerenderPlugin: Plugin = vitePrerender({
 });
 
 // Prerendering needs a launchable Chromium. If the required system
-// libraries can't be installed, degrade to client-side rendering with a
-// warning instead of failing the whole build (Google still executes JS).
-const prerenderTolerant: Plugin = {
-  ...prerenderPlugin,
-  async closeBundle() {
-    try {
-      const hook = prerenderPlugin.closeBundle as
-        | (() => void | Promise<void>)
-        | { handler: () => void | Promise<void> }
-        | undefined;
-      if (typeof hook === "function") {
-        await hook();
-      } else if (hook && typeof hook.handler === "function") {
-        await hook.handler();
-      }
-    } catch (err) {
-      console.warn("[prerender] Skipped: Chromium could not launch in this environment.");
-      console.warn(String((err as Error)?.message ?? err).slice(0, 500));
-    }
-  },
-};
+// libraries can't be installed (e.g., Vercel build image), degrade to
+// client-side rendering with a warning instead of failing the whole build
+// (Google still executes JS). Vercel sets VERCEL=1 in the build env.
+const isVercelBuild = process.env.VERCEL === '1';
+
+const prerenderTolerant: Plugin = isVercelBuild
+  ? { name: 'prerender-disabled-on-vercel-build' }
+  : {
+      ...prerenderPlugin,
+      async closeBundle() {
+        try {
+          const hook = prerenderPlugin.closeBundle as
+            | (() => void | Promise<void>)
+            | { handler: () => void | Promise<void> }
+            | undefined;
+          if (typeof hook === "function") {
+            await hook();
+          } else if (hook && typeof hook.handler === "function") {
+            await hook.handler();
+          }
+        } catch (err) {
+          console.warn("[prerender] Skipped: Chromium could not launch in this environment.");
+          console.warn(String((err as Error)?.message ?? err).slice(0, 500));
+        }
+      },
+    };
 
 export default defineConfig({
   plugins: [
