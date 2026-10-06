@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { useI18n } from '@i18n/useI18n';
+import { useSeo } from '@hooks/useSeo';
 import { Typography } from '@components/atoms/Typography/Typography';
 import { Card, CardBody } from '@components/molecules/Card/Card';
 
@@ -7,9 +8,14 @@ type CookiesPolicyPageProps = Record<string, never>;
 
 export const CookiesPolicyPage: FC<CookiesPolicyPageProps> = () => {
   const { t } = useI18n();
+  const seo = useSeo({
+    title: t('seo.cookies.title'),
+    description: t('seo.cookies.description'),
+  });
 
   return (
     <div className="legal-page">
+      {seo}
       <div className="legal-page__container">
         <Card variant="outlined" padding="lg" className="legal-page__card">
           <CardBody>

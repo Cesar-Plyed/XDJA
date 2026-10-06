@@ -325,6 +325,40 @@
       "image_preview": "Vista previa",
       "image_upload_hint": "Arrastra imágenes o haz clic para seleccionar (máx. 5, 5 MB cada una)",
       "drag_drop": "Arrastra y suelta las imágenes aquí, o haz clic para seleccionar"
+    },
+    "seo": {
+      "home": {
+        "title": "XDJA Construction | Construcción y Renovación de Excelencia",
+        "description": "Servicios expertos de construcción y renovación. Transformamos espacios con precisión, calidad y responsabilidad. Cotiza gratis hoy."
+      },
+      "projects": {
+        "title": "Proyectos | XDJA Construction",
+        "description": "Portafolio de construcción y renovación: hormigón estampado, reparación estructural y remodelaciones con garantía de 5 años."
+      },
+      "reviews": {
+        "title": "Reseñas | XDJA Construction",
+        "description": "Reseñas reales de clientes sobre construcción y renovación. Descubre lo que dicen de nuestra calidad y servicio."
+      },
+      "privacy": {
+        "title": "Política de Privacidad | XDJA Construction",
+        "description": "Cómo XDJA Construction recopila, usa y protege tus datos personales. Lee nuestra política de privacidad."
+      },
+      "terms": {
+        "title": "Términos de Servicio | XDJA Construction",
+        "description": "Los términos y condiciones para usar el sitio web y los servicios de XDJA Construction."
+      },
+      "cookies": {
+        "title": "Política de Cookies | XDJA Construction",
+        "description": "Cómo XDJA Construction usa las cookies y cómo puedes gestionar tus preferencias."
+      },
+      "login": {
+        "title": "Iniciar Sesión | XDJA Construction",
+        "description": "Accede al panel de administración de XDJA Construction."
+      },
+      "admin": {
+        "title": "Panel de Administración | XDJA Construction",
+        "description": "Panel de administración de XDJA Construction. Gestiona proyectos y reseñas."
+      }
     }
   },
   "en": {
@@ -653,6 +687,40 @@
       "image_preview": "Preview",
       "image_upload_hint": "Drag images or click to select (max 5, 5 MB each)",
       "drag_drop": "Drag and drop images here, or click to select"
+    },
+    "seo": {
+      "home": {
+        "title": "XDJA Construction | Premium Building & Renovation Services",
+        "description": "Expert construction and renovation services. We transform spaces with precision, quality, and responsibility. Get your free quote today."
+      },
+      "projects": {
+        "title": "Projects | XDJA Construction",
+        "description": "Our construction and renovation portfolio — stamped concrete, structural repair, and remodels built to last with a 5-year warranty."
+      },
+      "reviews": {
+        "title": "Reviews | XDJA Construction",
+        "description": "Real customer reviews of XDJA Construction's building and renovation work. See what our clients say about quality and service."
+      },
+      "privacy": {
+        "title": "Privacy Policy | XDJA Construction",
+        "description": "How XDJA Construction collects, uses, and protects your personal data. Read our privacy policy."
+      },
+      "terms": {
+        "title": "Terms of Service | XDJA Construction",
+        "description": "The terms and conditions for using the XDJA Construction website and services."
+      },
+      "cookies": {
+        "title": "Cookie Policy | XDJA Construction",
+        "description": "How XDJA Construction uses cookies and how you can manage your cookie preferences."
+      },
+      "login": {
+        "title": "Login | XDJA Construction",
+        "description": "Sign in to the XDJA Construction admin dashboard."
+      },
+      "admin": {
+        "title": "Admin Dashboard | XDJA Construction",
+        "description": "XDJA Construction admin dashboard. Manage projects and reviews."
+      }
     }
   }
 }

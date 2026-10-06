@@ -18,6 +18,7 @@
     "motion": "^11.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^3.0.0",
     "react-lazy-load-image-component": "^1.6.3",
     "react-router-dom": "^7.18.4",
     "sass": "^1.83.4"
@@ -35,6 +36,10 @@
     "globals": "^15.14.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-prerender": "^1.0.8"
+  },
+  "overrides": {
+    "puppeteer": "^22.0.0"
   }
 }

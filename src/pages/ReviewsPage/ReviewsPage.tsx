@@ -10,11 +10,16 @@ import { Label } from '@components/atoms/Label/Label';
 import { Spinner } from '@components/atoms/Spinner/Spinner';
 import { Typography } from '@components/atoms/Typography/Typography';
 import { useReviews } from '@hooks/useReviews';
+import { useSeo } from '@hooks/useSeo';
 import { ReviewForm } from '@components/organisms/ReviewForm/RevireFrom';
 import { ReviewCard } from '@components/molecules/ReviewCard/ReviewCard';
 
 export const ReviewsPage: FC = () => {
   const { t } = useI18n();
+  const seo = useSeo({
+    title: t('seo.reviews.title'),
+    description: t('seo.reviews.description'),
+  });
   const { data: projectsData } = useProjects(1, 50);
   const projects = useMemo(() => projectsData?.items ?? [], [projectsData]);
 
@@ -47,6 +52,7 @@ export const ReviewsPage: FC = () => {
     if (error) {
       return (
         <div className="reviews-page__state" role="alert">
+          {seo}
           <Icon name="star" size={56} className="reviews-page__state-icon" />
           <Typography variant="p" color="muted">{t('reviews.error')}</Typography>
           <Button variant="outline" size="sm" onClick={() => void refetch()}>
@@ -59,6 +65,7 @@ export const ReviewsPage: FC = () => {
     if (items.length === 0) {
       return (
         <div className="reviews-page__state" role="status">
+          {seo}
           <Icon name="star" size={56} className="reviews-page__state-icon" />
           <Typography variant="p" color="muted">{t('reviews.no_reviews')}</Typography>
         </div>
@@ -67,6 +74,7 @@ export const ReviewsPage: FC = () => {
 
     return (
       <>
+        {seo}
         <div className="reviews-page__grid" role="list">
           {items.map((review) => (
             <div key={review.id} role="listitem">

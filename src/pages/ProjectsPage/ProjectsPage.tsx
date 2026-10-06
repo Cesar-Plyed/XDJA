@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '@i18n/useI18n';
 import { useAllPortfolioItems } from '@hooks/usePortfolioItems';
+import { useSeo } from '@hooks/useSeo';
 import { Button } from '@components/atoms/Button/Button';
 import { Icon } from '@components/atoms/Icon/Icon';
 import { Spinner } from '@components/atoms/Spinner/Spinner';
@@ -11,9 +12,14 @@ import { ProjectCard } from '@components/molecules/ProjectCard/ProjectCard';
 export const ProjectsPage: FC = () => {
   const { t } = useI18n();
   const { items, loading, loadingMore, error, hasMore, loadMore, retry } = useAllPortfolioItems();
+  const seo = useSeo({
+    title: t('seo.projects.title'),
+    description: t('seo.projects.description'),
+  });
 
   return (
     <section className="projects-page" aria-labelledby="projects-page-title">
+      {seo}
       <div className="projects-page__container">
         <Link to="/#portfolio" className="projects-page__back">
           <Icon name="chevronLeft" size={18} />

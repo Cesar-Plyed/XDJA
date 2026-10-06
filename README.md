@@ -235,9 +235,10 @@ Create a `.env.local` file in the project root:
 VITE_API_BASE_URL=/api
 ```
 
-| Variable            | Default | Description                                                        |
-| ------------------- | ------- | ------------------------------------------------------------------ |
-| `VITE_API_BASE_URL` | `/api`  | Base URL for all backend calls. In dev, `/api` is proxied to `localhost:4000`. |
+| Variable            | Default                 | Description                                                        |
+| ------------------- | ----------------------- | ------------------------------------------------------------------ |
+| `VITE_API_BASE_URL` | `/api`                  | Base URL for all backend calls. In dev, `/api` is proxied to `localhost:4000`. |
+| `VITE_SITE_URL`     | `https://xdja.vercel.app` | Canonical site URL used for canonical tags, OG URLs, and hreflang alternates. Change it when a custom domain is added. |
 
 Only variables prefixed with `VITE_` are exposed to the client bundle. Never place secrets in them — all privileged operations (project creation, image upload tokens) are authenticated server-side with a bearer token.
 
@@ -441,42 +442,31 @@ The privacy policy specifies data collection practices (minimal by design), data
 
 ## SEO & Metadata
 
-### Meta Tags
+### Per-Page Meta (react-helmet-async)
 
-`index.html` contains the title, description, keywords, author, and robots directives.
+Every page sets its own title, description, robots, canonical, Open Graph, Twitter Card, and `hreflang` alternates via the `useSeo` hook (`src/hooks/useSeo.tsx`). Copy lives in `translations.json` under `seo.*` (both `es` and `en`). `/login` and `/admin` render `noindex, nofollow`.
+
+`index.html` keeps only the fallback `<title>`, keywords, and author — helmet updates the title element in place but *adds* meta/link tags, so duplicating them in `index.html` would ship two sets of tags on every prerendered page.
+
+### Prerendering
+
+`vite-plugin-prerender` (configured in `vite.config.ts`) renders the six public routes (`/`, `/projects`, `/reviews`, `/privacy`, `/terms`, `/cookies`) to static HTML at build time, so crawlers see the full head without executing JavaScript. Routes render sequentially and the capture waits for the app shell plus a short delay so react-helmet-async has applied the head tags. `/reviews` and `/projects` prerender in their loading state — their data is fetched client-side.
 
 ### Open Graph and Twitter Cards
 
-Enable rich previews on Facebook, LinkedIn, WhatsApp, and Twitter.
+Enable rich previews on Facebook, LinkedIn, WhatsApp, and Twitter. The image is `public/og-image.jpg` — currently a project photo used as a stopgap; replace it with a designed 1200×630 card.
 
 ### Structured Data (Schema.org)
 
-Implements `LocalBusiness` schema for business name, address, phone, ratings, social links, and category.
-
-```json
-{
-  "@type": "LocalBusiness",
-  "name": "XDJA Construction LLC",
-  "url": "https://xdja.vercel.app",
-  "telephone": "+15743046758",
-  "email": "xdjaconstructionllc@gmail.com",
-  "ratingValue": "5",
-  "ratingCount": "50"
-}
-```
-
-**Important**: Update `ratingCount` only with verified, auditable reviews. False ratings can result in search engine penalties.
+Implements `LocalBusiness` schema for business name, address, phone, social links, and category. It intentionally has no `aggregateRating` — the site has a single real review, and unverified ratings can result in search engine penalties. Only add rating fields with a verified, auditable count.
 
 ### Canonical URL
 
-Set to `https://xdja.vercel.app` to prevent duplicate content issues.
+Per-page canonicals are derived from `SITE_URL` (`src/lib/site.ts`, overridable via `VITE_SITE_URL`) plus the current path, e.g. `https://xdja.vercel.app/projects`.
 
 ### Sitemap & Robots.txt
 
-For production deployment, add:
-
-1. `public/sitemap.xml` — Site structure for search engines
-2. `public/robots.txt` — Crawling directives
+`public/sitemap.xml` lists the six public routes; `public/robots.txt` allows crawling but disallows `/login` and `/admin` and points at the sitemap. Both hardcode `https://xdja.vercel.app` — when a custom domain is added, update `SITE_URL`, the `Sitemap:` line in `robots.txt`, every `<loc>` in `sitemap.xml`, and the URLs in `index.html`.
 
 ## Deployment
 
@@ -502,7 +492,7 @@ Because the app uses `createBrowserRouter`, configure a rewrite so client-side r
 - [ ] All TypeScript types compile without errors: `npm run build`
 - [ ] No ESLint warnings: `npm run lint`
 - [ ] Update `index.html` with correct domain and company info
-- [ ] Replace placeholder images (og-image.png)
+- [ ] Replace the og-image.jpg stopgap with a designed 1200×630 card
 - [ ] Test contact form WhatsApp integration
 - [ ] Verify dark/light theme switching
 - [ ] Test language switching (ES/EN)
@@ -511,6 +501,7 @@ Because the app uses `createBrowserRouter`, configure a rewrite so client-side r
 - [ ] Verify image upload from the admin dashboard
 - [ ] Test responsive design on mobile/tablet
 - [ ] Run Lighthouse audit for performance/SEO
+- [ ] Verify prerendered HTML has per-page titles (`dist/*/index.html`)
 - [ ] Review legal pages for jurisdiction compliance
 - [ ] Update Schema.org data with actual business information
 - [ ] Test all external links (Facebook, WhatsApp, email)
@@ -625,7 +616,16 @@ Copyright 2025 XDJA Construction LLC. All rights reserved.
 
 ## Version History
 
-### 2.1.0 (Current)
+### 2.2.0 (Current)
+
+- Added per-page SEO via react-helmet-async (`useSeo` hook): title, description, robots, canonical, OG/Twitter cards, and hreflang alternates (es/en)
+- Added build-time prerendering of the six public routes with `vite-plugin-prerender`
+- Added `public/robots.txt` and `public/sitemap.xml`
+- Fixed broken og:image (was a 404; now `og-image.jpg` stopgap)
+- Removed unverified 5-star/50-review `aggregateRating` from the Schema.org data
+- `/login` and `/admin` now render `noindex, nofollow`
+
+### 2.1.0
 
 - Added `/projects` page with paginated project catalogue
 - Added `/reviews` page with project filter, on-demand translation, and Turnstile-protected form
@@ -652,6 +652,6 @@ Copyright 2025 XDJA Construction LLC. All rights reserved.
 
 ---
 
-**Last Updated**: 2026-09-28
+**Last Updated**: 2026-10-06
 
 **Maintained By**: XDJA Construction Development Team

@@ -11,6 +11,7 @@ import { useI18n } from '@i18n/useI18n';
 import { Icon, IconName } from '@components/atoms/Icon/Icon';
 import { Rating } from '@components/molecules/Rating/Rating';
 import { useAdminReviews, useReviewHistory } from '@hooks/useApi';
+import { useSeo } from '@hooks/useSeo';
 
 type AdminDashboardPageProps = Record<string, never>;
 
@@ -34,6 +35,11 @@ type Feedback = {
 
 export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
   const { t, locale } = useI18n();
+  const seo = useSeo({
+    title: t('seo.admin.title'),
+    description: t('seo.admin.description'),
+    noindex: true,
+  });
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -267,6 +273,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
   if (loading) {
     return (
       <div className="admin-page">
+        {seo}
         <div className="admin-page__loading">
           <Spinner size="lg" />
         </div>
@@ -277,6 +284,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
   if (error) {
     return (
       <div className="admin-page">
+        {seo}
         <div className="admin-page__error-state">
           <Icon name="shield" size={48} className="admin-page__error-icon" />
           <Typography variant="p" color="muted" className="admin-page__error-text">
@@ -302,6 +310,7 @@ export const AdminDashboardPage: FC<AdminDashboardPageProps> = () => {
 
   return (
     <div className="admin-page">
+      {seo}
       <header className="admin-page__header">
         <div className="admin-page__header-left">
           <Typography variant="h1" weight="bold" className="admin-page__title">

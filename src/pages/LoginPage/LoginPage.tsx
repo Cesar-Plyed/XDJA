@@ -7,11 +7,17 @@ import { FormField } from '@components/molecules/FormField/FormField';
 import { Icon } from '@components/atoms/Icon/Icon';
 import { Button } from '@components/atoms/Button/Button';
 import { api } from '@lib/api';
+import { useSeo } from '@hooks/useSeo';
 
 type LoginPageProps = Record<string, never>;
 
 export const LoginPage: FC<LoginPageProps> = () => {
   const { t } = useI18n();
+  const seo = useSeo({
+    title: t('seo.login.title'),
+    description: t('seo.login.description'),
+    noindex: true,
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
@@ -70,6 +76,7 @@ export const LoginPage: FC<LoginPageProps> = () => {
 
   return (
     <div className="login-page" role="main">
+      {seo}
       <div className="login-page__background" aria-hidden="true">
         <div className="login-page__shape login-page__shape--1" />
         <div className="login-page__shape login-page__shape--2" />
